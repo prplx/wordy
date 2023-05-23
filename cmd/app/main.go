@@ -1,0 +1,98 @@
+package main
+
+import (
+	"fmt"
+	"log"
+	"os"
+
+	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/recover"
+	"github.com/joho/godotenv"
+	"github.com/prplx/wordy/internal/handlers"
+	"github.com/prplx/wordy/internal/helpers"
+	"github.com/prplx/wordy/internal/models"
+	"github.com/prplx/wordy/internal/repositories"
+	"github.com/prplx/wordy/internal/services"
+	"github.com/prplx/wordy/pkg/logger"
+	"gorm.io/driver/mysql"
+	"gorm.io/gorm"
+)
+
+func main() {
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+
+	db, err := gorm.Open(mysql.Open(os.Getenv("DB_DSN")), &gorm.Config{
+		DisableForeignKeyConstraintWhenMigrating: true,
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	autoMigrate(db)
+	if err := seed(db); err != nil {
+		logger.Error(err)
+	}
+
+	repositories := repositories.NewRepositories(db)
+	services := services.NewServices(services.Deps{
+		Repositories: *repositories,
+	})
+	handlers := handlers.NewHandlers(services)
+
+	app := fiber.New()
+	app.Use(recover.New())
+	handlers.Init(app)
+
+	port := fmt.Sprintf(":%s", helpers.Getenv("PORT", "3000"))
+	log.Fatal(app.Listen(port))
+}
+
+func autoMigrate(db *gorm.DB) {
+	if err := db.AutoMigrate(&models.User{}); err != nil {
+		log.Fatal(err)
+	}
+	if err := db.AutoMigrate(&models.Expression{}); err != nil {
+		log.Fatal(err)
+	}
+	if err := db.AutoMigrate(&models.Example{}); err != nil {
+		log.Fatal(err)
+	}
+	if err := db.AutoMigrate(&models.Language{}); err != nil {
+		log.Fatal(err)
+	}
+	if err := db.AutoMigrate(&models.Audio{}); err != nil {
+		log.Fatal(err)
+	}
+	if err := db.AutoMigrate(&models.Translation{}); err != nil {
+		log.Fatal(err)
+	}
+}
+
+func seed(db *gorm.DB) error {
+	languages := []models.Language{
+		{
+			Code:  "en",
+			Text:  "English",
+			Emoji: "🇬🇧",
+		},
+		{
+			Code:  "ru",
+			Text:  "Русский",
+			Emoji: "🇷🇺",
+		},
+		{
+			Code:  "nl",
+			Text:  "Nederlands",
+			Emoji: "🇳🇱",
+		},
+	}
+	result := db.Create(&languages)
+	if result.Error != nil {
+		return result.Error
+	}
+
+	return nil
+}
