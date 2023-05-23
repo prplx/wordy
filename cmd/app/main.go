@@ -30,24 +30,28 @@ func main() {
 }
 
 func run(ctx context.Context) error {
-	tun, err := ngrok.Listen(ctx,
-		config.HTTPEndpoint(),
-		ngrok.WithAuthtokenFromEnv(),
-	)
-	if err != nil {
-		return err
-	}
+	var tun ngrok.Tunnel
 
-	err = godotenv.Load()
-	if err != nil {
-		log.Fatal("Error loading .env file")
+	if !helpers.IsProduction() {
+		err := godotenv.Load()
+		if err != nil {
+			return err
+		}
+
+		tun, err = ngrok.Listen(ctx,
+			config.HTTPEndpoint(),
+			ngrok.WithAuthtokenFromEnv(),
+		)
+		if err != nil {
+			return err
+		}
 	}
 
 	db, err := gorm.Open(mysql.Open(os.Getenv("DB_DSN")), &gorm.Config{
 		DisableForeignKeyConstraintWhenMigrating: true,
 	})
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
 	autoMigrate(db)
@@ -65,7 +69,7 @@ func run(ctx context.Context) error {
 	app.Use(recover.New())
 	handlers.Init(app)
 
-	if os.Getenv("APP_ENV") == "production" {
+	if helpers.IsProduction() {
 		port := fmt.Sprintf(":%s", helpers.Getenv("PORT", "3000"))
 		return app.Listen(port)
 	} else {

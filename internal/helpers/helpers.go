@@ -84,3 +84,7 @@ func SetWebhookUrl(webhookUrl string) error {
 
 	return nil
 }
+
+func IsProduction() bool {
+	return Getenv("APP_ENV", "development") == "production"
+}
