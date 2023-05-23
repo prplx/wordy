@@ -1,7 +1,11 @@
 package helpers
 
 import (
+	"encoding/json"
+	"errors"
 	"fmt"
+	"io"
+	"net/http"
 	"os"
 	"strings"
 
@@ -50,4 +54,33 @@ func IsExpressionFulfilledWithTranslationsExamplesAudio(e models.Expression) boo
 
 func BuildMessage(text ...string) string {
 	return strings.Join(text, "\n\n")
+}
+
+func SetWebhookUrl(webhookUrl string) error {
+	setWebhookUrl := "https://api.telegram.org/bot" + os.Getenv("TG_BOT_TOKEN") + "/setWebhook?url=" + webhookUrl + "/api/v1/bot"
+	resp, err := http.Get(setWebhookUrl)
+	if err != nil {
+		return err
+	}
+
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return err
+	}
+
+	var response types.SetWebhookResponse
+	if err := json.Unmarshal(body, &response); err != nil {
+		return err
+	}
+
+	if !response.Ok {
+		return errors.New(response.Description)
+	}
+
+	fmt.Println(string(body))
+	fmt.Println("Webhook URL is: " + webhookUrl + "/api/v1/bot")
+
+	return nil
 }

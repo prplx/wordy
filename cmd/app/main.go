@@ -1,11 +1,14 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
+	"net/http"
 	"os"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/adaptor"
 	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/joho/godotenv"
 	"github.com/prplx/wordy/internal/handlers"
@@ -14,12 +17,28 @@ import (
 	"github.com/prplx/wordy/internal/repositories"
 	"github.com/prplx/wordy/internal/services"
 	"github.com/prplx/wordy/pkg/logger"
+	"golang.ngrok.com/ngrok"
+	"golang.ngrok.com/ngrok/config"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
 
 func main() {
-	err := godotenv.Load()
+	if err := run(context.Background()); err != nil {
+		logger.Fatal(err)
+	}
+}
+
+func run(ctx context.Context) error {
+	tun, err := ngrok.Listen(ctx,
+		config.HTTPEndpoint(),
+		ngrok.WithAuthtokenFromEnv(),
+	)
+	if err != nil {
+		return err
+	}
+
+	err = godotenv.Load()
 	if err != nil {
 		log.Fatal("Error loading .env file")
 	}
@@ -46,8 +65,13 @@ func main() {
 	app.Use(recover.New())
 	handlers.Init(app)
 
-	port := fmt.Sprintf(":%s", helpers.Getenv("PORT", "3000"))
-	log.Fatal(app.Listen(port))
+	if os.Getenv("APP_ENV") == "production" {
+		port := fmt.Sprintf(":%s", helpers.Getenv("PORT", "3000"))
+		return app.Listen(port)
+	} else {
+		helpers.SetWebhookUrl(tun.URL())
+		return http.Serve(tun, adaptor.FiberApp(app))
+	}
 }
 
 func autoMigrate(db *gorm.DB) {

@@ -30,8 +30,6 @@ func (h *Handlers) handleBot(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	// logger.PrettyStruct(update)
-
 	if update.Message.From.Username != "mmystiq" && update.CallbackQuery.From.Username != "mmystiq" {
 		h.services.Telegram.SendText(update.Message.Chat.Id, "The bot is currently under development. Please, come back later.", 0)
 		return ctx.SendStatus(http.StatusOK)

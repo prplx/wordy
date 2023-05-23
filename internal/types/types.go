@@ -47,3 +47,9 @@ type KeyboardButton struct {
 type WithText interface {
 	GetText() string
 }
+
+type SetWebhookResponse struct {
+	Ok          bool   `json:"ok"`
+	ErrorCode   int    `json:"error_code"`
+	Description string `json:"description"`
+}
