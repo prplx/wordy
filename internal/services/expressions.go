@@ -23,6 +23,6 @@ func (s *ExpressionsService) Create(expression *models.Expression) (uint, error)
 	return s.repository.Create(expression)
 }
 
-func (s *ExpressionsService) GetByTextWithTranslationExamplesAudio(text string) (models.Expression, error) {
-	return s.repository.GetByTextWithTranslationExamplesAudio(text)
+func (s *ExpressionsService) GetByTextWithAllData(text string) (models.Expression, error) {
+	return s.repository.GetByTextWithAllData(text)
 }

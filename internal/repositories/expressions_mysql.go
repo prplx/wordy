@@ -28,9 +28,9 @@ func (r *ExpressionsRepo) GetByText(text string) (models.Expression, error) {
 	return expression, result.Error
 }
 
-func (r *ExpressionsRepo) GetByTextWithTranslationExamplesAudio(text string) (models.Expression, error) {
+func (r *ExpressionsRepo) GetByTextWithAllData(text string) (models.Expression, error) {
 	var expression models.Expression
-	result := r.db.Preload("Translations").Preload("Examples").Preload("Audio").First(&expression, "text = ?", text)
+	result := r.db.Preload("Translations").Preload("Examples").Preload("Audio").Preload("Synonyms").First(&expression, "text = ?", text)
 
 	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		return expression, models.ErrRecordNotFound

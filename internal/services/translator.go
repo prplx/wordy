@@ -19,3 +19,7 @@ func (s *TranslatorService) Translate(text, sourceLang, targetLang string) ([]st
 func (s *TranslatorService) GenerateExamples(text, sourceLang string) ([]string, error) {
 	return s.client.GenerateExamples(text, sourceLang)
 }
+
+func (s *TranslatorService) GenerateSynonyms(text, sourceLang string) ([]string, error) {
+	return s.client.GenerateSynonyms(text, sourceLang)
+}

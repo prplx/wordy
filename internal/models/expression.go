@@ -13,6 +13,7 @@ type Expression struct {
 	Audio        []Audio
 	Translations []Translation
 	Examples     []Example
+	Synonyms     []Synonym
 }
 
 func (e Expression) GetText() string {

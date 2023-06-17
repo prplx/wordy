@@ -1,0 +1,54 @@
+[BotSettings]
+hash = "sha1-7092a29470c4b70c80f4677229a1b96560bdb168"
+one = "Настройки бота"
+other = "Настройки бота"
+
+[BotUnderDevelopment]
+hash = "sha1-b7fcf8e37d76f1dcdf68282bee31732dff204baf"
+one = "Бот находится в процессе разработки. Пожалуйста, попробуйте позже."
+other = "Бот находится в процессе разработки. Пожалуйста, попробуйте позже."
+
+[ChooseLanguage]
+hash = "sha1-94d0c90db55128b9fffb7beee8d09b83668d9b08"
+one = "Выберите язык"
+other = "Выберите язык"
+
+[Example]
+hash = "sha1-eb01bf04c9a0e8a71c45816513df424f1c7ffedb"
+one = "Пример"
+other = "Примеры"
+
+[SetFirstLanguage]
+hash = "sha1-f8c34ce7d0b552189ce673d823b7653ece79aa32"
+one = "Родной язык"
+other = "Родной язык"
+
+[SetLanguages]
+hash = "sha1-02bd29a31ab0b00834e50557430480ddfcf73fd5"
+one = "Пожалуйста, выберите родной и целевой языки с помощью команды /settings."
+other = "Пожалуйста, выберите родной и целевой языки с помощью команды /settings."
+
+[SetSecondLanguage]
+hash = "sha1-4cb095095998ce2b0ea4ea55b0724eb9305cde14"
+one = "Целевой язык"
+other = "Целевой язык"
+
+[SettingsUpdated]
+hash = "sha1-b4f70ab4c9f562e8600654c114ce17ef705ac833"
+one = "Настройки обновлены"
+other = "Настройки обновлены"
+
+[SomethingWentWrong]
+hash = "sha1-5960adec8de48ce289274d406719cec0892daef4"
+one = "Что-то пошло не так. Пожалуйста, попробуйте позже."
+other = "Что-то пошло не так. Пожалуйста, попробуйте позже."
+
+[Synonym]
+hash = "sha1-275759b40ff138e8fc8084351de98f0273666e8a"
+one = "Синоним"
+other = "Синонимы"
+
+[Translation]
+hash = "sha1-8ad8302d110b05d7e02330dac58628134fdcff02"
+one = "Перевод"
+other = "Переводы"

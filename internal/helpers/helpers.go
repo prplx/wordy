@@ -27,7 +27,7 @@ func BuildMessageFromSliceOfTexted[WT types.WithText](wt []WT) string {
 		if i > 0 {
 			builder.WriteString("\n")
 		}
-		builder.WriteString(fmt.Sprintf("%d. %s", i+1, t.GetText()))
+		builder.WriteString(fmt.Sprintf("- %s", t.GetText()))
 	}
 
 	return builder.String()
@@ -48,12 +48,21 @@ func GetUserFirstAndSecondLanguagesIds(user models.User, languages []models.Lang
 	return firstLanguage, secondLanguage
 }
 
-func IsExpressionFulfilledWithTranslationsExamplesAudio(e models.Expression) bool {
-	return e.ID != 0 && e.Translations != nil && e.Examples != nil && e.Audio != nil && len(e.Translations) > 0 && len(e.Examples) > 0 && len(e.Audio) > 0
+func IsExpressionWithAllData(e models.Expression) bool {
+	return e.ID != 0 && e.Translations != nil && e.Examples != nil && e.Audio != nil && len(e.Translations) > 0 && len(e.Examples) > 0 && len(e.Synonyms) > 0 && len(e.Audio) > 0
 }
 
 func BuildMessage(text ...string) string {
-	return strings.Join(text, "\n\n")
+	var message string
+	for i, t := range text {
+		if t != "" {
+			if i > 0 && message != "" {
+				message += "\n\n"
+			}
+			message += t
+		}
+	}
+	return message
 }
 
 func SetWebhookUrl(webhookUrl string) error {

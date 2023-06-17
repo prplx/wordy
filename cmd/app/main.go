@@ -11,6 +11,8 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/adaptor"
 	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/joho/godotenv"
+	"github.com/nicksnyder/go-i18n/v2/i18n"
+	"github.com/pelletier/go-toml/v2"
 	"github.com/prplx/wordy/internal/handlers"
 	"github.com/prplx/wordy/internal/helpers"
 	"github.com/prplx/wordy/internal/models"
@@ -19,6 +21,7 @@ import (
 	"github.com/prplx/wordy/pkg/logger"
 	"golang.ngrok.com/ngrok"
 	"golang.ngrok.com/ngrok/config"
+	"golang.org/x/text/language"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
@@ -59,9 +62,15 @@ func run(ctx context.Context) error {
 		logger.Error(err)
 	}
 
+	bundle := i18n.NewBundle(language.English)
+	bundle.RegisterUnmarshalFunc("toml", toml.Unmarshal)
+	bundle.MustLoadMessageFile("i18n/active.en.toml")
+	bundle.MustLoadMessageFile("i18n/active.ru.toml")
+
 	repositories := repositories.NewRepositories(db)
 	services := services.NewServices(services.Deps{
-		Repositories: *repositories,
+		Repositories:    *repositories,
+		LocalizerBundle: bundle,
 	})
 	handlers := handlers.NewHandlers(services)
 
@@ -95,6 +104,9 @@ func autoMigrate(db *gorm.DB) {
 		log.Fatal(err)
 	}
 	if err := db.AutoMigrate(&models.Translation{}); err != nil {
+		log.Fatal(err)
+	}
+	if err := db.AutoMigrate(&models.Synonym{}); err != nil {
 		log.Fatal(err)
 	}
 }

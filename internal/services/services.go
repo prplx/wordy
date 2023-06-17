@@ -1,6 +1,7 @@
 package services
 
 import (
+	"github.com/nicksnyder/go-i18n/v2/i18n"
 	"github.com/prplx/wordy/internal/models"
 	"github.com/prplx/wordy/internal/repositories"
 	"github.com/prplx/wordy/internal/types"
@@ -15,18 +16,20 @@ type Users interface {
 type Expressions interface {
 	Create(expression *models.Expression) (uint, error)
 	GetByText(text string) (models.Expression, error)
-	GetByTextWithTranslationExamplesAudio(text string) (models.Expression, error)
+	GetByTextWithAllData(text string) (models.Expression, error)
 }
 
 type Telegram interface {
 	AnswerCallbackQuery(queryId string, text string) error
-	SendText(chatId int64, text string, replyMessageId int) (string, error)
+	SendText(chatId int64, text string, replyMessageId ...int) (string, error)
 	SendReplyKeyboard(chatId int64, buttons []types.KeyboardButton, text string) (string, error)
+	SendTypingChatAction(chatId int64) error
 }
 
 type Translator interface {
 	Translate(text, sourceLang, targetLang string) ([]string, error)
 	GenerateExamples(text, sourceLang string) ([]string, error)
+	GenerateSynonyms(text, sourceLang string) ([]string, error)
 }
 
 type Languages interface {
@@ -45,12 +48,21 @@ type Examples interface {
 }
 
 type TextToSpeech interface {
-	Convert(text string, lang string) (string, error)
+	Convert(text, lang, userId string) (string, error)
 }
 
 type Audio interface {
 	GetByExpressionId(expressionId int) (models.Audio, error)
 	Create(audio models.Audio) (int64, error)
+}
+
+type Synonyms interface {
+	Create(synonyms []models.Synonym) (int64, error)
+}
+
+type Localizer interface {
+	L(id string, count ...interface{}) string
+	ChangeLanguage(lang string)
 }
 
 type Services struct {
@@ -62,11 +74,14 @@ type Services struct {
 	Translations Translations
 	Examples     Examples
 	TextToSpeech TextToSpeech
+	Synonyms     Synonyms
 	Audio        Audio
+	Localizer    Localizer
 }
 
 type Deps struct {
-	Repositories repositories.Repositories
+	Repositories    repositories.Repositories
+	LocalizerBundle *i18n.Bundle
 }
 
 func NewServices(deps Deps) *Services {
@@ -80,5 +95,7 @@ func NewServices(deps Deps) *Services {
 		Examples:     NewExamplesService(deps.Repositories.Examples),
 		Audio:        NewAudioService(deps.Repositories.Audio),
 		TextToSpeech: NewTextToSpeechService(),
+		Synonyms:     NewSynonymsService(deps.Repositories.Synonyms),
+		Localizer:    NewLocalizerService(deps.LocalizerBundle),
 	}
 }

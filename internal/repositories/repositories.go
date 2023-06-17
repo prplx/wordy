@@ -15,7 +15,7 @@ type Users interface {
 type Expressions interface {
 	Create(expression *models.Expression) (uint, error)
 	GetByText(text string) (models.Expression, error)
-	GetByTextWithTranslationExamplesAudio(text string) (models.Expression, error)
+	GetByTextWithAllData(text string) (models.Expression, error)
 }
 
 type Languages interface {
@@ -33,6 +33,10 @@ type Examples interface {
 	Create(examples []models.Example) (int64, error)
 }
 
+type Synonyms interface {
+	Create(synonyms []models.Synonym) (int64, error)
+}
+
 type Audio interface {
 	GetByExpressionId(expressionId int) (models.Audio, error)
 	Create(audio models.Audio) (int64, error)
@@ -44,6 +48,7 @@ type Repositories struct {
 	Languages    Languages
 	Translations Translations
 	Examples     Examples
+	Synonyms     Synonyms
 	Audio        Audio
 }
 
@@ -54,6 +59,7 @@ func NewRepositories(db *gorm.DB) *Repositories {
 		Languages:    NewLanguagesRepository(db),
 		Translations: NewTranslationsRepository(db),
 		Examples:     NewExamplesRepository(db),
+		Synonyms:     NewSynonymsRepository(db),
 		Audio:        NewAudioRepository(db),
 	}
 }
