@@ -6,6 +6,10 @@ other = "The bot is currently under development. Please, come back later."
 one = "Something went wrong, please try again."
 other = "Something went wrong, please try again."
 
+[Greeting]
+one = "Hello! My name is Wordy, and I will help you with learning foreign languages! Just send me a word or phrase in the language you're interested in, and I'll return its translation, several synonyms, usage examples, and even audio with the correct pronunciation. Start by setting your native and target languages in /settings. You can change languages before each new message. Good luck with your studies!"
+other = "Hello! My name is Wordy, and I will help you with learning foreign languages! Just send me a word or phrase in the language you're interested in, and I'll return its translation, several synonyms, usage examples, and even audio with the correct pronunciation. Start by setting your native and target languages in /settings. You can change languages before each new message. Good luck with your studies!"
+
 [SetLanguages]
 one = "Please, set the first and second languages using /settings first"
 other = "Please, set the first and second languages using /settings first"

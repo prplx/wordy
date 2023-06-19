@@ -64,11 +64,9 @@ func (h *Handlers) handleBot(ctx *fiber.Ctx) error {
 	}
 
 	fromId := update.Message.From.Id
-
 	if fromId == 0 {
 		fromId = update.CallbackQuery.From.Id
 	}
-
 	if fromId == 0 {
 		return ctx.SendStatus(http.StatusOK)
 	}
@@ -96,8 +94,15 @@ func (h *Handlers) handleBot(ctx *fiber.Ctx) error {
 
 	}
 
+	if update.Message.Text == "/start" {
+		if _, err := h.handleStartCommand(update.Message.Chat.Id); err != nil {
+			logger.Error(err)
+		}
+		return ctx.SendStatus(http.StatusOK)
+	}
+
 	if update.Message.Text == "/settings" {
-		if _, err := h.handleSettingsCommand(update.Message.From, update.Message.Chat.Id); err != nil {
+		if _, err := h.handleSettingsCommand(update.Message.Chat.Id); err != nil {
 			logger.Error(err)
 		}
 		return ctx.SendStatus(http.StatusOK)
@@ -175,7 +180,11 @@ func (h *Handlers) handleBot(ctx *fiber.Ctx) error {
 	return ctx.SendStatus(http.StatusOK)
 }
 
-func (h *Handlers) handleSettingsCommand(user types.User, chatId int64) (string, error) {
+func (h *Handlers) handleStartCommand(chatId int64) (string, error) {
+	return h.services.Telegram.SendText(chatId, h.services.Localizer.L("Greeting"))
+}
+
+func (h *Handlers) handleSettingsCommand(chatId int64) (string, error) {
 	return h.services.Telegram.SendReplyKeyboard(chatId, []types.KeyboardButton{{Text: h.services.Localizer.L("SetFirstLanguage"), CallbackData: "setFirstLanguage"}, {Text: h.services.Localizer.L("SetSecondLanguage"), CallbackData: "setSecondLanguage"}}, h.services.Localizer.L("BotSettings"))
 }
 

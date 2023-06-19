@@ -1,4 +1,4 @@
-.PHONY: buildWebhook setWebhook run
+.PHONY: buildWebhook setWebhook run test
 
 buildWebhook:
 	go build -o ./cmd/setTelegramWebhookUrl ./cmd/setTelegramWebhookUrl.go
@@ -9,4 +9,7 @@ setWebhook: buildWebhook
 
 run:
 	go run ./cmd/app/main.go
+
+test:
+	go test -v ./...
 

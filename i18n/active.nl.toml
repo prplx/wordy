@@ -1,0 +1,59 @@
+[BotSettings]
+hash = "sha1-7092a29470c4b70c80f4677229a1b96560bdb168"
+one = "Bot-instellingen"
+other = "Bot-instellingen"
+
+[BotUnderDevelopment]
+hash = "sha1-b7fcf8e37d76f1dcdf68282bee31732dff204baf"
+one = "De bot is momenteel in ontwikkeling. Kom later terug."
+other = "De bot is momenteel in ontwikkeling. Kom later terug."
+
+[ChooseLanguage]
+hash = "sha1-94d0c90db55128b9fffb7beee8d09b83668d9b08"
+one = "Kies taal"
+other = "Kies taal"
+
+[Example]
+hash = "sha1-eb01bf04c9a0e8a71c45816513df424f1c7ffedb"
+one = "Voorbeeld"
+other = "Voorbeelden"
+
+[Greeting]
+hash = "sha1-ef8ae6811c855194dc0059104ee12251f45b82a7"
+one = "Hallo! Mijn naam is Wordy en ik help je met het leren van vreemde talen! Stuur me gewoon een woord of zin in de taal die je interesseert en ik geef je de vertaling terug, enkele synoniemen, voorbeelden van gebruik en zelfs audio met de juiste uitspraak. Begin met het instellen van je moedertaal en doeltaal in /settings. Je kunt talen veranderen voor elk nieuw bericht. Veel succes met je studie!"
+other = "Hallo! Mijn naam is Wordy en ik help je met het leren van vreemde talen! Stuur me gewoon een woord of zin in de taal die je interesseert en ik geef je de vertaling terug, enkele synoniemen, voorbeelden van gebruik en zelfs audio met de juiste uitspraak. Begin met het instellen van je moedertaal en doeltaal in /settings. Je kunt talen veranderen voor elk nieuw bericht. Veel succes met je studie!"
+
+[SetFirstLanguage]
+hash = "sha1-f8c34ce7d0b552189ce673d823b7653ece79aa32"
+one = "Stel eerste taal in"
+other = "Stel eerste taal in"
+
+[SetLanguages]
+hash = "sha1-02bd29a31ab0b00834e50557430480ddfcf73fd5"
+one = "Stel eerst de eerste en tweede taal in met /settings"
+other = "Stel eerst de eerste en tweede taal in met /settings"
+
+[SetSecondLanguage]
+hash = "sha1-4cb095095998ce2b0ea4ea55b0724eb9305cde14"
+one = "Stel tweede taal in"
+other = "Stel tweede taal in"
+
+[SettingsUpdated]
+hash = "sha1-b4f70ab4c9f562e8600654c114ce17ef705ac833"
+one = "Instellingen bijgewerkt"
+other = "Instellingen bijgewerkt"
+
+[SomethingWentWrong]
+hash = "sha1-5960adec8de48ce289274d406719cec0892daef4"
+one = "Er is iets misgegaan, probeer het opnieuw."
+other = "Er is iets misgegaan, probeer het opnieuw."
+
+[Synonym]
+hash = "sha1-275759b40ff138e8fc8084351de98f0273666e8a"
+one = "Synoniem"
+other = "Synoniemen"
+
+[Translation]
+hash = "sha1-8ad8302d110b05d7e02330dac58628134fdcff02"
+one = "Vertaling"
+other = "Vertalingen"
