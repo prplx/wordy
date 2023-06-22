@@ -2,7 +2,6 @@ package app
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"os"
 	"os/signal"
@@ -82,7 +81,7 @@ func Run(ctx context.Context) {
 
 	go func() {
 		var err error
-		port := fmt.Sprintf(":%s", helpers.Getenv("PORT", "3000"))
+		port := helpers.Getenv("PORT", "3000")
 		if helpers.IsProduction() {
 			err = server.Run(port, adaptor.FiberApp(app))
 		} else {
