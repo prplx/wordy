@@ -56,4 +56,4 @@ other = "Синонимы"
 [Translation]
 hash = "sha1-8ad8302d110b05d7e02330dac58628134fdcff02"
 one = "Перевод"
-other = "Переводы"
+other = "Варианты перевода"

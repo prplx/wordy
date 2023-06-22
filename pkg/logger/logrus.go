@@ -42,6 +42,10 @@ func Fatal(msg ...interface{}) {
 	logrus.Fatal(msg...)
 }
 
+func Fatalf(format string, args ...interface{}) {
+	logrus.Fatalf(format, args...)
+}
+
 func PrettyStruct(msg ...interface{}) {
 	json, err := json.MarshalIndent(msg, "", "  ")
 	if err != nil {
