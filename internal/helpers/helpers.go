@@ -49,7 +49,7 @@ func GetUserFirstAndSecondLanguagesIds(user models.User, languages []models.Lang
 }
 
 func IsExpressionWithAllData(e models.Expression) bool {
-	return e.ID != 0 && e.Translations != nil && e.Examples != nil && e.Audio != nil && len(e.Translations) > 0 && len(e.Examples) > 0 && len(e.Synonyms) > 0 && len(e.Audio) > 0
+	return e.Translations != nil && e.Examples != nil && e.Audio != nil && len(e.Translations) > 0 && len(e.Examples) > 0 && len(e.Synonyms) > 0 && len(e.Audio) > 0
 }
 
 func BuildMessage(text ...string) string {
