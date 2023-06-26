@@ -32,10 +32,11 @@ func (s *TextToSpeechAWSPolly) Convert(text, lang, userId string) (string, error
 
 	fileName := fmt.Sprintf("%s/%s.mp3", userId, time.Now().Format("2006-01-02-15-04-05"))
 	s3params := &s3manager.UploadInput{
-		Bucket: aws.String("wordy-s3"),
-		Key:    aws.String(fileName),
-		Body:   output.AudioStream,
-		ACL:    aws.String("public-read"),
+		Bucket:      aws.String("wordy-s3"),
+		Key:         aws.String(fileName),
+		Body:        output.AudioStream,
+		ACL:         aws.String("public-read"),
+		ContentType: aws.String("audio/mpeg"),
 	}
 
 	uploader := s3manager.NewUploader(sess)
