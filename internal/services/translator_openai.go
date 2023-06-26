@@ -3,9 +3,8 @@ package services
 import (
 	"context"
 	"fmt"
-	"strings"
-	"unicode"
 
+	"github.com/prplx/wordy/internal/helpers"
 	openai "github.com/sashabaranov/go-openai"
 )
 
@@ -26,7 +25,7 @@ func (s *OpenAITranslator) Translate(text, sourceLang, targetLang string) ([]str
 		return nil, err
 	}
 
-	return buildResponse(resp.Choices[0].Message.Content), nil
+	return helpers.BuildOpenAiResponse(resp.Choices[0].Message.Content), nil
 }
 
 func (s *OpenAITranslator) GenerateExamples(text, sourceLang string) ([]string, error) {
@@ -36,7 +35,7 @@ func (s *OpenAITranslator) GenerateExamples(text, sourceLang string) ([]string, 
 		return nil, err
 	}
 
-	return buildResponse(resp.Choices[0].Message.Content), nil
+	return helpers.BuildOpenAiResponse(resp.Choices[0].Message.Content), nil
 }
 
 func (s *OpenAITranslator) GenerateSynonyms(text, sourceLang string) ([]string, error) {
@@ -46,7 +45,7 @@ func (s *OpenAITranslator) GenerateSynonyms(text, sourceLang string) ([]string, 
 		return nil, err
 	}
 
-	return buildResponse(resp.Choices[0].Message.Content), nil
+	return helpers.BuildOpenAiResponse(resp.Choices[0].Message.Content), nil
 }
 
 func generateRequest(content string) openai.ChatCompletionRequest {
@@ -59,25 +58,4 @@ func generateRequest(content string) openai.ChatCompletionRequest {
 			},
 		},
 	}
-}
-
-func buildResponse(text string) []string {
-	unique := make(map[string]bool)
-	result := []string{}
-	for _, line := range strings.Split(text, "\n") {
-		if line != "" {
-			trimmedLine := strings.TrimSpace(line)
-			cleanLine := strings.TrimLeft(trimmedLine, "-")
-			runes := []rune(cleanLine)
-			runes[0] = unicode.ToUpper(runes[0])
-			resultLine := string(runes)
-
-			if !unique[resultLine] && line != "" {
-				result = append(result, resultLine)
-				unique[resultLine] = true
-			}
-		}
-	}
-
-	return result
 }

@@ -7,7 +7,9 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"regexp"
 	"strings"
+	"unicode"
 
 	"github.com/prplx/wordy/internal/models"
 	"github.com/prplx/wordy/internal/types"
@@ -96,4 +98,41 @@ func SetWebhookUrl(webhookUrl string) error {
 
 func IsProduction() bool {
 	return Getenv("APP_ENV", "development") == "production"
+}
+
+func BuildOpenAiResponse(text string) []string {
+	unique := make(map[string]bool)
+	result := []string{}
+	re := regexp.MustCompile(`["\d\.]+`)
+
+	for _, line := range strings.Split(text, "\n") {
+		line = strings.TrimSpace(line)
+		if line == "" {
+			continue
+		}
+
+		line = strings.TrimLeft(line, "-")
+		line = re.ReplaceAllString(line, "")
+		line = strings.TrimSpace(line)
+		runes := []rune(line)
+		runes[0] = unicode.ToUpper(runes[0])
+		resultLine := string(runes)
+
+		if !unique[resultLine] {
+			result = append(result, resultLine)
+			unique[resultLine] = true
+		}
+
+	}
+
+	return result
+}
+
+func StringInSlice(str string, slice []string) bool {
+	for _, s := range slice {
+		if s == str {
+			return true
+		}
+	}
+	return false
 }

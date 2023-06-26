@@ -178,3 +178,100 @@ func TestIsExpressionWithAllData(t *testing.T) {
 		})
 	}
 }
+
+func TestBuildOpenAiResponse(t *testing.T) {
+	tests := []struct {
+		name     string
+		input    string
+		expected []string
+	}{
+		{
+			name:     "empty input",
+			input:    "",
+			expected: []string{},
+		},
+		{
+			name:     "single line",
+			input:    "hello world",
+			expected: []string{"Hello world"},
+		},
+		{
+			name:     "multiple lines",
+			input:    "hello world\nfoo bar",
+			expected: []string{"Hello world", "Foo bar"},
+		},
+		{
+			name:     "duplicate lines",
+			input:    "hello world\nhello world",
+			expected: []string{"Hello world"},
+		},
+		{
+			name:     "special characters",
+			input:    "hello-world\nfoo-bar",
+			expected: []string{"Hello-world", "Foo-bar"},
+		},
+		{
+			name:     "dashes in the beginning",
+			input:    "- hello-world\n-foo-bar",
+			expected: []string{"Hello-world", "Foo-bar"},
+		},
+		{
+			name:     "numbers",
+			input:    "1.hello 123\n2. foo 456",
+			expected: []string{"Hello", "Foo"},
+		},
+		{
+			name:     "quotes",
+			input:    `"1.hellofoo"`,
+			expected: []string{"Hellofoo"},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := BuildOpenAiResponse(tt.input)
+			assert.Equal(t, tt.expected, actual)
+		})
+	}
+}
+
+func TestStringInSlice(t *testing.T) {
+	tests := []struct {
+		name     string
+		str      string
+		slice    []string
+		expected bool
+	}{
+		{
+			name:     "empty slice",
+			str:      "foo",
+			slice:    []string{},
+			expected: false,
+		},
+		{
+			name:     "string in slice",
+			str:      "foo",
+			slice:    []string{"foo", "bar", "baz"},
+			expected: true,
+		},
+		{
+			name:     "string not in slice",
+			str:      "qux",
+			slice:    []string{"foo", "bar", "baz"},
+			expected: false,
+		},
+		{
+			name:     "duplicate strings in slice",
+			str:      "foo",
+			slice:    []string{"foo", "foo", "bar", "baz"},
+			expected: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := StringInSlice(tt.str, tt.slice)
+			assert.Equal(t, tt.expected, actual)
+		})
+	}
+}

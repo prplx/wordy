@@ -24,6 +24,7 @@ func (h *Handlers) initBotHandlers(api fiber.Router) {
 }
 
 func (h *Handlers) handleBot(ctx *fiber.Ctx) error {
+	allowedUsers := []string{"mmystiq", "nastyaknyazhe"}
 	var update types.Update
 	var lang string
 
@@ -41,7 +42,7 @@ func (h *Handlers) handleBot(ctx *fiber.Ctx) error {
 	}
 	h.services.Localizer.ChangeLanguage(lang)
 
-	if update.Message.From.Username != "mmystiq" && update.CallbackQuery.From.Username != "mmystiq" {
+	if !helpers.StringInSlice(update.Message.From.Username, allowedUsers) && !helpers.StringInSlice(update.CallbackQuery.From.Username, allowedUsers) {
 		h.services.Telegram.SendText(update.Message.Chat.Id, h.services.Localizer.L("BotUnderDevelopment"))
 		return ctx.SendStatus(http.StatusOK)
 	}
