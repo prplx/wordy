@@ -275,3 +275,44 @@ func TestStringInSlice(t *testing.T) {
 		})
 	}
 }
+
+func TestAddBlockTitleToText(t *testing.T) {
+	tests := []struct {
+		name     string
+		title    string
+		text     string
+		expected string
+	}{
+		{
+			name:     "empty title and text",
+			title:    "",
+			text:     "",
+			expected: "",
+		},
+		{
+			name:     "empty title",
+			title:    "",
+			text:     "foo",
+			expected: "",
+		},
+		{
+			name:     "empty text",
+			title:    "bar",
+			text:     "",
+			expected: "",
+		},
+		{
+			name:     "non-empty title and text",
+			title:    "bar",
+			text:     "foo",
+			expected: "<b>bar</b>\nfoo",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := AddBlockTitleToText(tt.title, tt.text)
+			assert.Equal(t, tt.expected, actual)
+		})
+	}
+}

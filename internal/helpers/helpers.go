@@ -136,3 +136,10 @@ func StringInSlice(str string, slice []string) bool {
 	}
 	return false
 }
+
+func AddBlockTitleToText(title, text string) string {
+	if text == "" || title == "" {
+		return ""
+	}
+	return fmt.Sprintf("<b>%s</b>\n%s", title, text)
+}
