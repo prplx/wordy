@@ -2,7 +2,6 @@ package v1
 
 import (
 	"errors"
-	"fmt"
 	"net/http"
 	"regexp"
 	"strconv"
@@ -220,11 +219,12 @@ func (h *Handlers) handleTextTranslation(chatId int64, replyMessageId int, userI
 
 	// Happy case, everything is in the database
 	if helpers.IsExpressionWithAllData(dbExpression) {
-		translations = helpers.BuildMessageFromSliceOfTexted(dbExpression.Translations)
-		examples = helpers.BuildMessageFromSliceOfTexted(dbExpression.Examples)
-		synonyms = helpers.BuildMessageFromSliceOfTexted(dbExpression.Synonyms)
+		translations = h.buildTranslationsBlock(dbExpression.Translations)
+		synonyms = h.buildSynonymsBlock(dbExpression.Synonyms)
+		examples = h.buildExamplesBlock(dbExpression.Examples)
 		audio = dbExpression.Audio[0].Url
-		if _, err := h.services.Telegram.SendText(chatId, helpers.BuildMessage(translations, examples, audio), replyMessageId); err != nil {
+		message := helpers.BuildMessage(translations, synonyms, examples, audio)
+		if _, err := h.services.Telegram.SendText(chatId, message, replyMessageId); err != nil {
 			return err
 		}
 
@@ -258,7 +258,7 @@ func (h *Handlers) handleTextTranslation(chatId int64, replyMessageId int, userI
 		}
 
 		if len(dbTranslations) > 0 {
-			translations = fmt.Sprintf("<b>%s</b>\n%s", h.services.Localizer.L("Translation", "2.5"), helpers.BuildMessageFromSliceOfTexted(dbTranslations))
+			translations = h.buildTranslationsBlock(dbTranslations)
 		}
 
 		wg.Done()
@@ -276,7 +276,7 @@ func (h *Handlers) handleTextTranslation(chatId int64, replyMessageId int, userI
 			topErr = err
 		}
 		if len(dbExamples) > 0 {
-			examples = fmt.Sprintf("<b>%s</b>\n%s", h.services.Localizer.L("Example", "2.5"), helpers.BuildMessageFromSliceOfTexted(dbExamples))
+			examples = h.buildExamplesBlock(dbExamples)
 		}
 
 		wg.Done()
@@ -295,7 +295,7 @@ func (h *Handlers) handleTextTranslation(chatId int64, replyMessageId int, userI
 				topErr = err
 			}
 			if len(dbSynonyms) > 0 {
-				synonyms = fmt.Sprintf("<b>%s</b>\n%s", h.services.Localizer.L("Synonym", "2.5"), helpers.BuildMessageFromSliceOfTexted(dbSynonyms))
+				synonyms = h.buildSynonymsBlock(dbSynonyms)
 			}
 
 			wg.Done()
@@ -408,4 +408,16 @@ func (h *Handlers) createAudio(expressionId int, language, text string, userId s
 	}
 
 	return audioToCreate, nil
+}
+
+func (h *Handlers) buildTranslationsBlock(translations []models.Translation) string {
+	return helpers.AddBlockTitleToText(h.services.Localizer.L("Translation", "2.5"), helpers.BuildMessageFromSliceOfTexted(translations))
+}
+
+func (h *Handlers) buildExamplesBlock(examples []models.Example) string {
+	return helpers.AddBlockTitleToText(h.services.Localizer.L("Example", "2.5"), helpers.BuildMessageFromSliceOfTexted(examples))
+}
+
+func (h *Handlers) buildSynonymsBlock(synonyms []models.Synonym) string {
+	return helpers.AddBlockTitleToText(h.services.Localizer.L("Synonym", "2.5"), helpers.BuildMessageFromSliceOfTexted(synonyms))
 }
