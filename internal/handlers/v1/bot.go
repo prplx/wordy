@@ -2,7 +2,9 @@ package v1
 
 import (
 	"errors"
+	"net"
 	"net/http"
+	"os"
 	"regexp"
 	"strconv"
 	"strings"
@@ -17,15 +19,24 @@ import (
 
 func (h *Handlers) initBotHandlers(api fiber.Router) {
 	bot := api.Group("bot")
+
 	{
 		bot.Post("/", h.handleBot)
 	}
 }
 
 func (h *Handlers) handleBot(ctx *fiber.Ctx) error {
+	reqIP := net.ParseIP(ctx.IP())
+	_, ipnetA, _ := net.ParseCIDR(os.Getenv("TG_SUBNET_A"))
+	_, ipnetB, _ := net.ParseCIDR(os.Getenv("TG_SUBNET_B"))
 	allowedUsers := []string{"mmystiq", "nastyaknyazhe"}
 	var update types.Update
 	var lang string
+
+	if !ipnetA.Contains(reqIP) && !ipnetB.Contains(reqIP) {
+		logger.Error("Unauthorized request from IP: " + ctx.IP())
+		return ctx.SendStatus(http.StatusOK)
+	}
 
 	if err := ctx.BodyParser(&update); err != nil {
 		logger.Error(err)
