@@ -119,6 +119,11 @@ func (h *Handlers) handleBot(ctx *fiber.Ctx) error {
 		return ctx.SendStatus(http.StatusOK)
 	}
 
+	if update.CallbackQuery.Data == "setLanguagePair" {
+		// TODO: implement
+		return ctx.SendStatus(http.StatusOK)
+	}
+
 	if update.CallbackQuery.Data == "setFirstLanguage" || update.CallbackQuery.Data == "setSecondLanguage" {
 		if _, err := h.handleSetLanguage(update.CallbackQuery.Message.Chat.Id, update.CallbackQuery.Id, update.CallbackQuery.Data, languages); err != nil {
 			logger.Error(err)
@@ -172,7 +177,7 @@ func (h *Handlers) handleBot(ctx *fiber.Ctx) error {
 	h.services.Localizer.ChangeLanguage(firstUserLanguage.Code)
 
 	if firstUserLanguage.ID == 0 || secondUserLanguage.ID == 0 {
-		if _, err := h.services.Telegram.SendText(update.Message.Chat.Id, h.services.Localizer.L("SetLanguages")); err != nil {
+		if _, err := h.services.Telegram.SendText(update.Message.Chat.Id, h.services.Localizer.L("SetLanguagesWarning")); err != nil {
 			logger.Error(err)
 		}
 		return ctx.SendStatus(http.StatusOK)
@@ -200,7 +205,7 @@ func (h *Handlers) handleStartCommand(chatId int64) (string, error) {
 }
 
 func (h *Handlers) handleSettingsCommand(chatId int64) (string, error) {
-	return h.services.Telegram.SendReplyKeyboard(chatId, []types.KeyboardButton{{Text: h.services.Localizer.L("SetFirstLanguage"), CallbackData: "setFirstLanguage"}, {Text: h.services.Localizer.L("SetSecondLanguage"), CallbackData: "setSecondLanguage"}}, h.services.Localizer.L("BotSettings"))
+	return h.services.Telegram.SendReplyKeyboard(chatId, []types.KeyboardButton{{Text: h.services.Localizer.L("SetLanguages"), CallbackData: "setLanguagePair"}, {Text: h.services.Localizer.L("SetFirstLanguage"), CallbackData: "setFirstLanguage"}, {Text: h.services.Localizer.L("SetSecondLanguage"), CallbackData: "setSecondLanguage"}}, h.services.Localizer.L("BotSettings"))
 }
 
 func (h *Handlers) handleUpdateUserSettings(queryId string, user *models.User) error {

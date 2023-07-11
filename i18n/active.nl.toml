@@ -29,6 +29,11 @@ one = "Stel eerste taal in"
 other = "Stel eerste taal in"
 
 [SetLanguages]
+hash = "sha1-e2d4c27b68c854e8ca33f210b356f97625b4d586"
+one = "Taalpaar instellen 🇬🇧 🔄 🇳🇱"
+other = "Taalpaar instellen 🇬🇧 🔄 🇳🇱"
+
+[SetLanguagesWarning]
 hash = "sha1-02bd29a31ab0b00834e50557430480ddfcf73fd5"
 one = "Stel eerst de eerste en tweede taal in met /settings"
 other = "Stel eerst de eerste en tweede taal in met /settings"

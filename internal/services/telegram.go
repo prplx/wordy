@@ -56,16 +56,15 @@ func (s *TelegramService) SendText(chatId int64, text string, replyMessageId ...
 }
 
 func (s *TelegramService) SendReplyKeyboard(chatId int64, buttons []types.KeyboardButton, text string) (string, error) {
-	var inlineKeyboardButtons []tgbotapi.InlineKeyboardButton
+	var inlineKeyboardButtons [][]tgbotapi.InlineKeyboardButton
 	for _, btn := range buttons {
-		inlineKeyboardButtons = append(inlineKeyboardButtons, tgbotapi.NewInlineKeyboardButtonData(btn.Text, btn.CallbackData))
+		row := tgbotapi.NewInlineKeyboardRow(tgbotapi.NewInlineKeyboardButtonData(btn.Text, btn.CallbackData))
+		inlineKeyboardButtons = append(inlineKeyboardButtons, row)
 	}
 
 	msg := tgbotapi.NewMessage(chatId, text)
 	msg.ReplyMarkup = tgbotapi.NewInlineKeyboardMarkup(
-		tgbotapi.NewInlineKeyboardRow(
-			inlineKeyboardButtons...,
-		),
+		inlineKeyboardButtons...,
 	)
 	response, err := s.bot.Send(msg)
 	return response.Text, err
