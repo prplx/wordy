@@ -173,7 +173,11 @@ func (h *Handlers) handleBot(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	if err := h.handleTextTranslation(update.Message.Chat.Id, update.Message.MessageId, int(dbUser.ID), int(secondUserLanguage.ID), strings.TrimSpace(update.Message.Text), secondUserLanguage.Code, firstUserLanguage.Code, strconv.Itoa(update.Message.From.Id)); err != nil {
+	langs := helpers.GetLanguageMap()
+	to := langs[firstUserLanguage.Code]
+	from := langs[secondUserLanguage.Code]
+
+	if err := h.handleTextTranslation(update.Message.Chat.Id, update.Message.MessageId, int(dbUser.ID), int(secondUserLanguage.ID), strings.TrimSpace(update.Message.Text), from.Text, to.Text, strconv.Itoa(update.Message.From.Id)); err != nil {
 		logger.Error(err)
 	}
 

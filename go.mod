@@ -12,6 +12,7 @@ require (
 	github.com/pelletier/go-toml/v2 v2.0.8
 	github.com/sashabaranov/go-openai v1.9.4
 	github.com/sirupsen/logrus v1.9.0
+	github.com/stretchr/testify v1.8.4
 	golang.ngrok.com/ngrok v1.0.0
 	golang.org/x/text v0.8.0
 	gorm.io/driver/mysql v1.5.0
@@ -31,6 +32,7 @@ require (
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/jpillora/backoff v1.0.0 // indirect
 	github.com/klauspost/compress v1.16.3 // indirect
+	github.com/kr/pretty v0.3.1 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.18 // indirect
 	github.com/mattn/go-runewidth v0.0.14 // indirect
@@ -39,8 +41,6 @@ require (
 	github.com/rivo/uniseg v0.2.0 // indirect
 	github.com/savsgio/dictpool v0.0.0-20221023140959-7bf2e61cea94 // indirect
 	github.com/savsgio/gotils v0.0.0-20230208104028-c358bd845dee // indirect
-	github.com/stretchr/objx v0.5.0 // indirect
-	github.com/stretchr/testify v1.8.4 // indirect
 	github.com/technoweenie/multipartstreamer v1.0.1 // indirect
 	github.com/tinylib/msgp v1.1.8 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
