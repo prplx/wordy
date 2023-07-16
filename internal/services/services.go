@@ -20,7 +20,6 @@ type Expressions interface {
 }
 
 type Telegram interface {
-	AnswerCallbackQuery(queryId string, text string) error
 	SendText(chatId int64, text string, replyMessageId ...int) (string, error)
 	SendReplyKeyboard(chatId int64, buttons []types.KeyboardButton, text string) (string, error)
 	SendTypingChatAction(chatId int64) error
