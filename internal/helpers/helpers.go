@@ -103,7 +103,7 @@ func IsProduction() bool {
 func BuildOpenAiResponse(text string) []string {
 	unique := make(map[string]bool)
 	result := []string{}
-	re := regexp.MustCompile(`["\d\.]+`)
+	re := regexp.MustCompile(`["\d\.\[\]]+`)
 
 	for _, line := range strings.Split(text, "\n") {
 		line = strings.TrimSpace(line)
