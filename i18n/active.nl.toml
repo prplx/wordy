@@ -1,3 +1,8 @@
+[Back]
+hash = "sha1-b52b36b7269fbfc58ec24bb724691951a3decbe8"
+one = "Terug"
+other = "Terug"
+
 [BotSettings]
 hash = "sha1-7092a29470c4b70c80f4677229a1b96560bdb168"
 one = "Bot-instellingen"
@@ -8,10 +13,20 @@ hash = "sha1-b7fcf8e37d76f1dcdf68282bee31732dff204baf"
 one = "De bot is momenteel in ontwikkeling. Kom later terug."
 other = "De bot is momenteel in ontwikkeling. Kom later terug."
 
+[ChooseFirstLanguage]
+hash = "sha1-491e23ee92ac7ec717ee01260a39e7063accdde9"
+one = "Selecteer de eerste taal"
+other = "Selecteer de eerste taal"
+
 [ChooseLanguage]
 hash = "sha1-94d0c90db55128b9fffb7beee8d09b83668d9b08"
 one = "Kies taal"
 other = "Kies taal"
+
+[ChooseSecondLanguage]
+hash = "sha1-0a2c7736da464d8823fa98827107b8670eac65f6"
+one = "Selecteer de tweede taal"
+other = "Selecteer de tweede taal"
 
 [Example]
 hash = "sha1-eb01bf04c9a0e8a71c45816513df424f1c7ffedb"
@@ -23,12 +38,22 @@ hash = "sha1-ef8ae6811c855194dc0059104ee12251f45b82a7"
 one = "Hallo! Mijn naam is Wordy en ik help je met het leren van vreemde talen! Stuur me gewoon een woord of zin in de taal die je interesseert en ik geef je de vertaling terug, enkele synoniemen, voorbeelden van gebruik en zelfs audio met de juiste uitspraak. Begin met het instellen van je moedertaal en doeltaal in /settings. Je kunt talen veranderen voor elk nieuw bericht. Veel succes met je studie!"
 other = "Hallo! Mijn naam is Wordy en ik help je met het leren van vreemde talen! Stuur me gewoon een woord of zin in de taal die je interesseert en ik geef je de vertaling terug, enkele synoniemen, voorbeelden van gebruik en zelfs audio met de juiste uitspraak. Begin met het instellen van je moedertaal en doeltaal in /settings. Je kunt talen veranderen voor elk nieuw bericht. Veel succes met je studie!"
 
+[LanguagesMustBeDifferent]
+hash = "sha1-bd5951b4495df201b5d1beaf9691703b449afe34"
+one = "Talen moeten verschillen"
+other = "Talen moeten verschillen"
+
 [SetFirstLanguage]
 hash = "sha1-f8c34ce7d0b552189ce673d823b7653ece79aa32"
 one = "Stel eerste taal in"
 other = "Stel eerste taal in"
 
 [SetLanguages]
+hash = "sha1-e2d4c27b68c854e8ca33f210b356f97625b4d586"
+one = "Taalpaar instellen 🇬🇧 🔄 🇳🇱"
+other = "Taalpaar instellen 🇬🇧 🔄 🇳🇱"
+
+[SetLanguagesWarning]
 hash = "sha1-02bd29a31ab0b00834e50557430480ddfcf73fd5"
 one = "Stel eerst de eerste en tweede taal in met /settings"
 other = "Stel eerst de eerste en tweede taal in met /settings"

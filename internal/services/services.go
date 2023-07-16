@@ -20,10 +20,12 @@ type Expressions interface {
 }
 
 type Telegram interface {
-	AnswerCallbackQuery(queryId string, text string) error
 	SendText(chatId int64, text string, replyMessageId ...int) (string, error)
 	SendReplyKeyboard(chatId int64, buttons []types.KeyboardButton, text string) (string, error)
 	SendTypingChatAction(chatId int64) error
+	EditMessage(chatId int64, messageId int, text string, buttons ...[]types.KeyboardButton) error
+	EditReplyMarkup(chatId int64, messageId int) error
+	DeleteMessage(chatId int64, messageId int) error
 }
 
 type Translator interface {
@@ -65,18 +67,23 @@ type Localizer interface {
 	ChangeLanguage(lang string)
 }
 
+type LanguageDetector interface {
+	Detect(text string) (string, bool)
+}
+
 type Services struct {
-	Users        Users
-	Telegram     Telegram
-	Translator   Translator
-	Expressions  Expressions
-	Languages    Languages
-	Translations Translations
-	Examples     Examples
-	TextToSpeech TextToSpeech
-	Synonyms     Synonyms
-	Audio        Audio
-	Localizer    Localizer
+	Users            Users
+	Telegram         Telegram
+	Translator       Translator
+	Expressions      Expressions
+	Languages        Languages
+	Translations     Translations
+	Examples         Examples
+	TextToSpeech     TextToSpeech
+	Synonyms         Synonyms
+	Audio            Audio
+	Localizer        Localizer
+	LanguageDetector LanguageDetector
 }
 
 type Deps struct {
@@ -86,16 +93,17 @@ type Deps struct {
 
 func NewServices(deps Deps) *Services {
 	return &Services{
-		Expressions:  NewExpressionsService(deps.Repositories.Expressions),
-		Users:        NewUsersService(deps.Repositories.Users),
-		Telegram:     NewTelegramService(),
-		Translator:   NewTranslatorService(),
-		Languages:    NewLanguagesService(deps.Repositories.Languages),
-		Translations: NewTranslationsService(deps.Repositories.Translations),
-		Examples:     NewExamplesService(deps.Repositories.Examples),
-		Audio:        NewAudioService(deps.Repositories.Audio),
-		TextToSpeech: NewTextToSpeechService(),
-		Synonyms:     NewSynonymsService(deps.Repositories.Synonyms),
-		Localizer:    NewLocalizerService(deps.LocalizerBundle),
+		Expressions:      NewExpressionsService(deps.Repositories.Expressions),
+		Users:            NewUsersService(deps.Repositories.Users),
+		Telegram:         NewTelegramService(),
+		Translator:       NewTranslatorService(),
+		Languages:        NewLanguagesService(deps.Repositories.Languages),
+		Translations:     NewTranslationsService(deps.Repositories.Translations),
+		Examples:         NewExamplesService(deps.Repositories.Examples),
+		Audio:            NewAudioService(deps.Repositories.Audio),
+		TextToSpeech:     NewTextToSpeechService(),
+		Synonyms:         NewSynonymsService(deps.Repositories.Synonyms),
+		Localizer:        NewLocalizerService(deps.LocalizerBundle),
+		LanguageDetector: NewLanguageDetectorService(),
 	}
 }

@@ -108,23 +108,17 @@ func autoMigrate(db *gorm.DB) {
 }
 
 func seed(db *gorm.DB) error {
-	languages := []models.Language{
-		{
-			Code:  "en",
-			Text:  "English",
-			Emoji: "🇬🇧",
-		},
-		{
-			Code:  "ru",
-			Text:  "Русский",
-			Emoji: "🇷🇺",
-		},
-		{
-			Code:  "nl",
-			Text:  "Nederlands",
-			Emoji: "🇳🇱",
-		},
+	languages := []models.Language{}
+
+	for _, language := range helpers.GetLanguageMap() {
+		languages = append(languages, models.Language{
+			Code:        language.Code,
+			Text:        language.Title,
+			EnglishText: language.EnglishTitle,
+			Emoji:       language.Emoji,
+		})
 	}
+
 	result := db.Create(&languages)
 	if result.Error != nil {
 		return result.Error

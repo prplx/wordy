@@ -19,7 +19,7 @@ func NewOpenAITranslator(apiKey string) *OpenAITranslator {
 }
 
 func (s *OpenAITranslator) Translate(text, sourceLang, targetLang string) ([]string, error) {
-	content := fmt.Sprintf("from IETF language code: %s\nto IETF language code: %s\ntranslate the text: '%s'\nproduce 3 versions of only the translation itself separated by a new line. Do not add any notes or any extra information or context.", sourceLang, targetLang, text)
+	content := fmt.Sprintf("From %s to %s translate text below: %q\nproduce 3 versions of only the translation itself separated by a new line. Do not add any notes or any extra information or context.", sourceLang, targetLang, text)
 	resp, err := s.client.CreateChatCompletion(context.Background(), generateRequest(content))
 	if err != nil {
 		return nil, err
@@ -29,7 +29,7 @@ func (s *OpenAITranslator) Translate(text, sourceLang, targetLang string) ([]str
 }
 
 func (s *OpenAITranslator) GenerateExamples(text, sourceLang string) ([]string, error) {
-	content := fmt.Sprintf("in the language which has IETF language code: %s\ngive me examples of 3 sentences with the usage of the word '%s'. Separate sentences by one new line symbol, do not add quotes, dashes, or sentence numbers.", sourceLang, text)
+	content := fmt.Sprintf("Generate 3 sentences in %s with examples of using the word %q. Separate sentences by one new line symbol, do not add quotes, dashes, or sentence numbers.", sourceLang, text)
 	resp, err := s.client.CreateChatCompletion(context.Background(), generateRequest(content))
 	if err != nil {
 		return nil, err
@@ -39,7 +39,7 @@ func (s *OpenAITranslator) GenerateExamples(text, sourceLang string) ([]string, 
 }
 
 func (s *OpenAITranslator) GenerateSynonyms(text, sourceLang string) ([]string, error) {
-	content := fmt.Sprintf("in the language which has IETF language code: %s\ngive me 5 synonyms of '%s'. Separate synonyms by one new line symbol, do not add quotes, dashes, or synonym numbers.", sourceLang, text)
+	content := fmt.Sprintf("Generate in %s 5 synonyms of the word %q. Separate synonyms by one new line symbol, do not add quotes, dashes, or synonym numbers.", sourceLang, text)
 	resp, err := s.client.CreateChatCompletion(context.Background(), generateRequest(content))
 	if err != nil {
 		return nil, err

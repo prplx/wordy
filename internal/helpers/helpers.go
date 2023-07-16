@@ -11,6 +11,8 @@ import (
 	"strings"
 	"unicode"
 
+	"github.com/pemistahl/lingua-go"
+
 	"github.com/prplx/wordy/internal/models"
 	"github.com/prplx/wordy/internal/types"
 )
@@ -103,7 +105,7 @@ func IsProduction() bool {
 func BuildOpenAiResponse(text string) []string {
 	unique := make(map[string]bool)
 	result := []string{}
-	re := regexp.MustCompile(`["\d\.]+`)
+	re := regexp.MustCompile(`["\d\.\[\]]+`)
 
 	for _, line := range strings.Split(text, "\n") {
 		line = strings.TrimSpace(line)
@@ -142,4 +144,38 @@ func AddBlockTitleToText(title, text string) string {
 		return ""
 	}
 	return fmt.Sprintf("<b>%s</b>\n%s", title, text)
+}
+
+type Language struct {
+	Code         string
+	Title        string
+	EnglishTitle string
+	Emoji        string
+	LinguaLang   lingua.Language
+}
+
+func GetLanguageMap() map[string]Language {
+	return map[string]Language{
+		"en": {
+			Code:         "en",
+			Title:        "English",
+			EnglishTitle: "English",
+			Emoji:        "🇬🇧",
+			LinguaLang:   lingua.English,
+		},
+		"ru": {
+			Code:         "ru",
+			Title:        "Русский",
+			EnglishTitle: "Russian",
+			Emoji:        "🇷🇺",
+			LinguaLang:   lingua.Russian,
+		},
+		"nl": {
+			Code:         "nl",
+			Title:        "Nederlands",
+			EnglishTitle: "Dutch",
+			Emoji:        "🇳🇱",
+			LinguaLang:   lingua.Dutch,
+		},
+	}
 }
