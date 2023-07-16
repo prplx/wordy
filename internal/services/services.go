@@ -67,18 +67,23 @@ type Localizer interface {
 	ChangeLanguage(lang string)
 }
 
+type LanguageDetector interface {
+	Detect(text string) (string, bool)
+}
+
 type Services struct {
-	Users        Users
-	Telegram     Telegram
-	Translator   Translator
-	Expressions  Expressions
-	Languages    Languages
-	Translations Translations
-	Examples     Examples
-	TextToSpeech TextToSpeech
-	Synonyms     Synonyms
-	Audio        Audio
-	Localizer    Localizer
+	Users            Users
+	Telegram         Telegram
+	Translator       Translator
+	Expressions      Expressions
+	Languages        Languages
+	Translations     Translations
+	Examples         Examples
+	TextToSpeech     TextToSpeech
+	Synonyms         Synonyms
+	Audio            Audio
+	Localizer        Localizer
+	LanguageDetector LanguageDetector
 }
 
 type Deps struct {

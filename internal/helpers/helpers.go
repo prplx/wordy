@@ -144,22 +144,32 @@ func AddBlockTitleToText(title, text string) string {
 	return fmt.Sprintf("<b>%s</b>\n%s", title, text)
 }
 
-func GetLanguageMap() map[string]models.Language {
-	return map[string]models.Language{
+type Language struct {
+	Code         string
+	Title        string
+	EnglishTitle string
+	Emoji        string
+}
+
+func GetLanguageMap() map[string]Language {
+	return map[string]Language{
 		"en": {
-			Code:  "en",
-			Text:  "English",
-			Emoji: "🇬🇧",
+			Code:         "en",
+			Title:        "English",
+			EnglishTitle: "English",
+			Emoji:        "🇬🇧",
 		},
 		"ru": {
-			Code:  "ru",
-			Text:  "Русский",
-			Emoji: "🇷🇺",
+			Code:         "ru",
+			Title:        "Русский",
+			EnglishTitle: "Russian",
+			Emoji:        "🇷🇺",
 		},
 		"nl": {
-			Code:  "nl",
-			Text:  "Nederlands",
-			Emoji: "🇳🇱",
+			Code:         "nl",
+			Title:        "Nederlands",
+			EnglishTitle: "Dutch",
+			Emoji:        "🇳🇱",
 		},
 	}
 }

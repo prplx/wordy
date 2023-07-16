@@ -208,12 +208,28 @@ func (h *Handlers) handleBot(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	langs := helpers.GetLanguageMap()
-	to := langs[firstUserLanguage.Code]
-	from := langs[secondUserLanguage.Code]
+	if detectedLanguage, exists := h.services.LanguageDetector.Detect(strings.TrimSpace(update.Message.Text)); exists {
+		var from, to models.Language
 
-	if err := h.handleTextTranslation(update.Message.Chat.Id, update.Message.MessageId, int(dbUser.ID), int(secondUserLanguage.ID), strings.TrimSpace(update.Message.Text), from.Text, to.Text, strconv.Itoa(update.Message.From.Id)); err != nil {
-		logger.Error(err)
+		if detectedLanguage == firstUserLanguage.EnglishText {
+			from = firstUserLanguage
+			to = secondUserLanguage
+		} else if detectedLanguage == secondUserLanguage.EnglishText {
+			from = secondUserLanguage
+			to = firstUserLanguage
+		} else {
+			// TODO: send a message to the user that the detected language is not in the language pair
+			h.services.Telegram.SendText(update.Message.Chat.Id, h.services.Localizer.L("SomethingWentWrong"))
+			return ctx.SendStatus(http.StatusOK)
+		}
+
+		if err := h.handleTextTranslation(update.Message.Chat.Id, update.Message.MessageId, int(dbUser.ID), int(secondUserLanguage.ID), strings.TrimSpace(update.Message.Text), from.Text, to.Text, strconv.Itoa(update.Message.From.Id)); err != nil {
+			logger.Error(err)
+		}
+
+	} else {
+		logger.Info("Language not found")
+		h.services.Telegram.SendText(update.Message.Chat.Id, h.services.Localizer.L("SomethingWentWrong"))
 	}
 
 	return ctx.SendStatus(http.StatusOK)

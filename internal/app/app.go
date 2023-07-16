@@ -112,9 +112,10 @@ func seed(db *gorm.DB) error {
 
 	for _, language := range helpers.GetLanguageMap() {
 		languages = append(languages, models.Language{
-			Code:  language.Code,
-			Text:  language.Text,
-			Emoji: language.Emoji,
+			Code:        language.Code,
+			Text:        language.Title,
+			EnglishText: language.EnglishTitle,
+			Emoji:       language.Emoji,
 		})
 	}
 
