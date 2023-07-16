@@ -93,16 +93,17 @@ type Deps struct {
 
 func NewServices(deps Deps) *Services {
 	return &Services{
-		Expressions:  NewExpressionsService(deps.Repositories.Expressions),
-		Users:        NewUsersService(deps.Repositories.Users),
-		Telegram:     NewTelegramService(),
-		Translator:   NewTranslatorService(),
-		Languages:    NewLanguagesService(deps.Repositories.Languages),
-		Translations: NewTranslationsService(deps.Repositories.Translations),
-		Examples:     NewExamplesService(deps.Repositories.Examples),
-		Audio:        NewAudioService(deps.Repositories.Audio),
-		TextToSpeech: NewTextToSpeechService(),
-		Synonyms:     NewSynonymsService(deps.Repositories.Synonyms),
-		Localizer:    NewLocalizerService(deps.LocalizerBundle),
+		Expressions:      NewExpressionsService(deps.Repositories.Expressions),
+		Users:            NewUsersService(deps.Repositories.Users),
+		Telegram:         NewTelegramService(),
+		Translator:       NewTranslatorService(),
+		Languages:        NewLanguagesService(deps.Repositories.Languages),
+		Translations:     NewTranslationsService(deps.Repositories.Translations),
+		Examples:         NewExamplesService(deps.Repositories.Examples),
+		Audio:            NewAudioService(deps.Repositories.Audio),
+		TextToSpeech:     NewTextToSpeechService(),
+		Synonyms:         NewSynonymsService(deps.Repositories.Synonyms),
+		Localizer:        NewLocalizerService(deps.LocalizerBundle),
+		LanguageDetector: NewLanguageDetectorService(),
 	}
 }

@@ -2,6 +2,7 @@ package services
 
 import (
 	"github.com/pemistahl/lingua-go"
+	"github.com/prplx/wordy/internal/helpers"
 )
 
 type LanguageDetectorLingua struct {
@@ -9,10 +10,10 @@ type LanguageDetectorLingua struct {
 }
 
 func NewLanguageDetectorLingua() *LanguageDetectorLingua {
-	linguaLangs := []lingua.Language{
-		lingua.English,
-		lingua.Russian,
-		lingua.Dutch,
+	var linguaLangs []lingua.Language
+
+	for _, lang := range helpers.GetLanguageMap() {
+		linguaLangs = append(linguaLangs, lang.LinguaLang)
 	}
 
 	return &LanguageDetectorLingua{

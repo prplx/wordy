@@ -11,6 +11,8 @@ import (
 	"strings"
 	"unicode"
 
+	"github.com/pemistahl/lingua-go"
+
 	"github.com/prplx/wordy/internal/models"
 	"github.com/prplx/wordy/internal/types"
 )
@@ -149,6 +151,7 @@ type Language struct {
 	Title        string
 	EnglishTitle string
 	Emoji        string
+	LinguaLang   lingua.Language
 }
 
 func GetLanguageMap() map[string]Language {
@@ -158,18 +161,21 @@ func GetLanguageMap() map[string]Language {
 			Title:        "English",
 			EnglishTitle: "English",
 			Emoji:        "🇬🇧",
+			LinguaLang:   lingua.English,
 		},
 		"ru": {
 			Code:         "ru",
 			Title:        "Русский",
 			EnglishTitle: "Russian",
 			Emoji:        "🇷🇺",
+			LinguaLang:   lingua.Russian,
 		},
 		"nl": {
 			Code:         "nl",
 			Title:        "Nederlands",
 			EnglishTitle: "Dutch",
 			Emoji:        "🇳🇱",
+			LinguaLang:   lingua.Dutch,
 		},
 	}
 }

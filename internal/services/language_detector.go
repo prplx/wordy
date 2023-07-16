@@ -10,6 +10,6 @@ func NewLanguageDetectorService() *LanguageDetectorService {
 	}
 }
 
-func (s *LanguageDetectorService) Translate(text string) (string, bool) {
+func (s *LanguageDetectorService) Detect(text string) (string, bool) {
 	return s.detector.Detect(text)
 }
