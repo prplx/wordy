@@ -84,13 +84,6 @@ func (h *Handlers) handleBot(ctx *fiber.Ctx) error {
 	dbUser, err := h.services.Users.GetByTgId(uint(fromId))
 	if err != nil {
 		if errors.Is(err, models.ErrRecordNotFound) {
-			if update.Message.From.LanguageCode != "" {
-				language, err := h.services.Languages.GetByCode(update.Message.From.LanguageCode)
-				if err == nil {
-					user.FirstLanguage = int(language.ID)
-				}
-			}
-
 			if _, err := h.services.Users.Create(&user); err != nil {
 				logger.Error(err)
 				return ctx.SendStatus(http.StatusOK)
@@ -118,51 +111,64 @@ func (h *Handlers) handleBot(ctx *fiber.Ctx) error {
 		return ctx.SendStatus(http.StatusOK)
 	}
 
-	if update.CallbackQuery.Data == "setLanguagePair" {
-		if err := h.handleSetLanguagePair(update.CallbackQuery.Message.Chat.Id, update.CallbackQuery.Message.MessageId, h.services.Localizer.L("ChooseFirstLanguage"), "setFirstLanguage", languages); err != nil {
+	if update.CallbackQuery.Data == "settings" {
+		if _, err := h.handleSettingsCommand(update.CallbackQuery.Message.Chat.Id, update.CallbackQuery.Message.MessageId); err != nil {
 			logger.Error(err)
 		}
 		return ctx.SendStatus(http.StatusOK)
 	}
 
-	setFirstLanguagePattern := `setFirstLanguage: (\w+)`
+	if update.CallbackQuery.Data == "setLanguagePair" {
+		if err := h.handleSetLanguagePair(update.CallbackQuery.Message.Chat.Id, update.CallbackQuery.Message.MessageId, h.services.Localizer.L("ChooseFirstLanguage"), "setFirstLanguage", "settings", languages); err != nil {
+			logger.Error(err)
+		}
+		return ctx.SendStatus(http.StatusOK)
+	}
+
+	setFirstLanguagePattern := `setFirstLanguage \((\w+)\)`
 
 	re := regexp.MustCompile(setFirstLanguagePattern)
 	match := re.FindStringSubmatch(update.CallbackQuery.Data)
 
-	if len(match) > 1 {
-		var firstLanguage models.Language
-		for _, language := range languages {
-			if language.Code == match[1] {
-				firstLanguage = language
-			}
-		}
-		dbUser.FirstLanguage = int(firstLanguage.ID)
-		if err := h.handleUpdateUserSettings(update.CallbackQuery.Id, &dbUser); err != nil {
-			logger.Error(err)
-			h.services.Telegram.SendText(update.CallbackQuery.Message.Chat.Id, h.services.Localizer.L("SomethingWentWrong"))
-			return ctx.SendStatus(http.StatusOK)
-		}
+	if len(match) == 2 {
+		firstCode := match[1]
 
-		if err := h.handleSetLanguagePair(update.CallbackQuery.Message.Chat.Id, update.CallbackQuery.Message.MessageId, h.services.Localizer.L("ChooseSecondLanguage"), "setSecondLanguage", languages); err != nil {
+		if err := h.handleSetLanguagePair(update.CallbackQuery.Message.Chat.Id, update.CallbackQuery.Message.MessageId, h.services.Localizer.L("ChooseSecondLanguage"), "setSecondLanguage"+" ("+firstCode+")", "setLanguagePair", languages); err != nil {
 			logger.Error(err)
 		}
 
 		return ctx.SendStatus(http.StatusOK)
 	}
 
-	setSecondLanguagePattern := `setSecondLanguage: (\w+)`
+	setSecondLanguagePattern := `setSecondLanguage \((\w+)\) \((\w+)\)`
 	re = regexp.MustCompile(setSecondLanguagePattern)
 	match = re.FindStringSubmatch(update.CallbackQuery.Data)
 
-	if len(match) > 1 {
+	if len(match) == 3 {
+		firstCode := match[1]
+		secondCode := match[2]
+		var firstLanguage models.Language
 		var secondLanguage models.Language
+
+		if firstCode == secondCode {
+			if err := h.handleSetLanguagePair(update.CallbackQuery.Message.Chat.Id, update.CallbackQuery.Message.MessageId, "⚠️ "+h.services.Localizer.L("LanguagesMustBeDifferent")+"\n"+h.services.Localizer.L("ChooseSecondLanguage"), "setSecondLanguage"+" ("+firstCode+")", "setLanguagePair", languages); err != nil {
+				logger.Error(err)
+			}
+
+			return ctx.SendStatus(http.StatusOK)
+		}
+
 		for _, language := range languages {
-			if language.Code == match[1] {
+			if language.Code == firstCode {
+				firstLanguage = language
+			}
+			if language.Code == secondCode {
 				secondLanguage = language
 			}
+
 		}
-		// TODO: check if first language is not equal to second language
+
+		dbUser.FirstLanguage = int(firstLanguage.ID)
 		dbUser.SecondLanguage = int(secondLanguage.ID)
 
 		if err := h.handleUpdateUserSettings(update.CallbackQuery.Id, &dbUser); err != nil {

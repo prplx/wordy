@@ -1,3 +1,8 @@
+[Back]
+hash = "sha1-b52b36b7269fbfc58ec24bb724691951a3decbe8"
+one = "Terug"
+other = "Terug"
+
 [BotSettings]
 hash = "sha1-7092a29470c4b70c80f4677229a1b96560bdb168"
 one = "Bot-instellingen"
@@ -32,6 +37,11 @@ other = "Voorbeelden"
 hash = "sha1-ef8ae6811c855194dc0059104ee12251f45b82a7"
 one = "Hallo! Mijn naam is Wordy en ik help je met het leren van vreemde talen! Stuur me gewoon een woord of zin in de taal die je interesseert en ik geef je de vertaling terug, enkele synoniemen, voorbeelden van gebruik en zelfs audio met de juiste uitspraak. Begin met het instellen van je moedertaal en doeltaal in /settings. Je kunt talen veranderen voor elk nieuw bericht. Veel succes met je studie!"
 other = "Hallo! Mijn naam is Wordy en ik help je met het leren van vreemde talen! Stuur me gewoon een woord of zin in de taal die je interesseert en ik geef je de vertaling terug, enkele synoniemen, voorbeelden van gebruik en zelfs audio met de juiste uitspraak. Begin met het instellen van je moedertaal en doeltaal in /settings. Je kunt talen veranderen voor elk nieuw bericht. Veel succes met je studie!"
+
+[LanguagesMustBeDifferent]
+hash = "sha1-bd5951b4495df201b5d1beaf9691703b449afe34"
+one = "Talen moeten verschillen"
+other = "Talen moeten verschillen"
 
 [SetFirstLanguage]
 hash = "sha1-f8c34ce7d0b552189ce673d823b7653ece79aa32"

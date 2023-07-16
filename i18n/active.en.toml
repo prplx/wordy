@@ -1,3 +1,7 @@
+[Back]
+one = "Back"
+other = "Back"
+
 [BotSettings]
 one = "Bot settings"
 other = "Bot settings"
@@ -25,6 +29,10 @@ other = "Examples"
 [Greeting]
 one = "Hello! My name is Wordy, and I will help you with learning foreign languages! Just send me a word or phrase in the language you're interested in, and I'll return its translation, several synonyms, usage examples, and even audio with the correct pronunciation. Start by setting your native and target languages in /settings. You can change languages before each new message. Good luck with your studies!"
 other = "Hello! My name is Wordy, and I will help you with learning foreign languages! Just send me a word or phrase in the language you're interested in, and I'll return its translation, several synonyms, usage examples, and even audio with the correct pronunciation. Start by setting your native and target languages in /settings. You can change languages before each new message. Good luck with your studies!"
+
+[LanguagesMustBeDifferent]
+one = "Languages must be different"
+other = "Languages must be different"
 
 [SetFirstLanguage]
 one = "Set first language"

@@ -15,15 +15,20 @@ func (h *Handlers) handleStartCommand(chatId int64) (string, error) {
 	return h.services.Telegram.SendText(chatId, h.services.Localizer.L("Greeting"))
 }
 
-func (h *Handlers) handleSettingsCommand(chatId int64) (string, error) {
-	return h.services.Telegram.SendReplyKeyboard(chatId, []types.KeyboardButton{{Text: h.services.Localizer.L("SetLanguages"), CallbackData: "setLanguagePair"}}, h.services.Localizer.L("BotSettings"))
+func (h *Handlers) handleSettingsCommand(chatId int64, messageId ...int) (string, error) {
+	if len(messageId) == 0 {
+		return h.services.Telegram.SendReplyKeyboard(chatId, []types.KeyboardButton{{Text: h.services.Localizer.L("SetLanguages"), CallbackData: "setLanguagePair"}}, h.services.Localizer.L("BotSettings"))
+	} else {
+		return "", h.services.Telegram.EditMessage(chatId, messageId[0], h.services.Localizer.L("BotSettings"), []types.KeyboardButton{{Text: h.services.Localizer.L("SetLanguages"), CallbackData: "setLanguagePair"}})
+	}
 }
 
-func (h *Handlers) handleSetLanguagePair(chatId int64, messageId int, text, command string, languages []models.Language) error {
+func (h *Handlers) handleSetLanguagePair(chatId int64, messageId int, text, command, menuBackCommand string, languages []models.Language) error {
 	var buttons []types.KeyboardButton
 	for _, language := range languages {
-		buttons = append(buttons, types.KeyboardButton{Text: language.Text + " " + language.Emoji, CallbackData: command + ": " + language.Code})
+		buttons = append(buttons, types.KeyboardButton{Text: language.Text + " " + language.Emoji, CallbackData: command + " (" + language.Code + ")"})
 	}
+	buttons = append(buttons, types.KeyboardButton{Text: "← " + h.services.Localizer.L("Back"), CallbackData: menuBackCommand})
 
 	return h.services.Telegram.EditMessage(chatId, messageId, text, buttons)
 }
