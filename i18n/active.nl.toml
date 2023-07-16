@@ -8,10 +8,20 @@ hash = "sha1-b7fcf8e37d76f1dcdf68282bee31732dff204baf"
 one = "De bot is momenteel in ontwikkeling. Kom later terug."
 other = "De bot is momenteel in ontwikkeling. Kom later terug."
 
+[ChooseFirstLanguage]
+hash = "sha1-491e23ee92ac7ec717ee01260a39e7063accdde9"
+one = "Selecteer de eerste taal"
+other = "Selecteer de eerste taal"
+
 [ChooseLanguage]
 hash = "sha1-94d0c90db55128b9fffb7beee8d09b83668d9b08"
 one = "Kies taal"
 other = "Kies taal"
+
+[ChooseSecondLanguage]
+hash = "sha1-0a2c7736da464d8823fa98827107b8670eac65f6"
+one = "Selecteer de tweede taal"
+other = "Selecteer de tweede taal"
 
 [Example]
 hash = "sha1-eb01bf04c9a0e8a71c45816513df424f1c7ffedb"

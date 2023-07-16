@@ -24,6 +24,9 @@ type Telegram interface {
 	SendText(chatId int64, text string, replyMessageId ...int) (string, error)
 	SendReplyKeyboard(chatId int64, buttons []types.KeyboardButton, text string) (string, error)
 	SendTypingChatAction(chatId int64) error
+	EditMessage(chatId int64, messageId int, text string, buttons ...[]types.KeyboardButton) error
+	EditReplyMarkup(chatId int64, messageId int) error
+	DeleteMessage(chatId int64, messageId int) error
 }
 
 type Translator interface {

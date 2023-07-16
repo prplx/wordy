@@ -82,3 +82,58 @@ func (s *TelegramService) SendTypingChatAction(chatId int64) error {
 	})
 	return err
 }
+
+func (s *TelegramService) EditMessage(chatId int64, messageId int, text string, buttons ...[]types.KeyboardButton) error {
+	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt)
+
+	defer cancel()
+
+	params := &botTg.EditMessageTextParams{
+		ChatID:    chatId,
+		MessageID: messageId,
+		Text:      text,
+	}
+
+	var inlineKeyboardButtons [][]models.InlineKeyboardButton
+	if len(buttons) > 0 {
+		for _, btn := range buttons[0] {
+			row := []models.InlineKeyboardButton{{Text: btn.Text, CallbackData: btn.CallbackData}}
+			inlineKeyboardButtons = append(inlineKeyboardButtons, row)
+		}
+	}
+	if len(inlineKeyboardButtons) > 0 {
+		params.ReplyMarkup = models.InlineKeyboardMarkup{
+			InlineKeyboard: inlineKeyboardButtons,
+		}
+	}
+
+	_, err := s.bot2.EditMessageText(ctx, params)
+	return err
+}
+
+func (s *TelegramService) EditReplyMarkup(chatId int64, messageId int) error {
+	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt)
+
+	defer cancel()
+
+	_, err := s.bot2.EditMessageReplyMarkup(ctx, &botTg.EditMessageReplyMarkupParams{
+		ChatID:    chatId,
+		MessageID: messageId,
+		ReplyMarkup: models.InlineKeyboardMarkup{
+			InlineKeyboard: [][]models.InlineKeyboardButton{{models.InlineKeyboardButton{Text: "Hello", CallbackData: "hello"}}},
+		},
+	})
+	return err
+}
+
+func (s *TelegramService) DeleteMessage(chatId int64, messageId int) error {
+	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt)
+
+	defer cancel()
+
+	_, err := s.bot2.DeleteMessage(ctx, &botTg.DeleteMessageParams{
+		ChatID:    chatId,
+		MessageID: messageId,
+	})
+	return err
+}

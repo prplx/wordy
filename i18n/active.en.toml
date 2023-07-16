@@ -6,9 +6,17 @@ other = "Bot settings"
 one = "The bot is currently under development. Please, come back later."
 other = "The bot is currently under development. Please, come back later."
 
+[ChooseFirstLanguage]
+one = "Choose first language"
+other = "Choose first language"
+
 [ChooseLanguage]
 one = "Choose language"
 other = "Choose language"
+
+[ChooseSecondLanguage]
+one = "Choose second language"
+other = "Choose second language"
 
 [Example]
 one = "Example"
