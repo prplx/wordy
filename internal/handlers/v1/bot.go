@@ -34,7 +34,7 @@ func (h *Handlers) handleBot(ctx *fiber.Ctx) error {
 
 	if !ipnetA.Contains(reqIP) && !ipnetB.Contains(reqIP) {
 		logger.Error("Unauthorized request from IP: " + ctx.IP())
-		return ctx.SendStatus(http.StatusOK)
+		// return ctx.SendStatus(http.StatusOK)
 	}
 
 	if err := ctx.BodyParser(&update); err != nil {
@@ -50,8 +50,6 @@ func (h *Handlers) handleBot(ctx *fiber.Ctx) error {
 		lang = "en"
 	}
 	h.services.Localizer.ChangeLanguage(lang)
-
-	logger.Error("Received update from: " + update.Message.From.Username + " (" + strconv.Itoa(update.Message.From.Id) + ")")
 
 	if !helpers.StringInSlice(update.Message.From.Username, allowedUsers) && !helpers.StringInSlice(update.CallbackQuery.From.Username, allowedUsers) {
 		h.services.Telegram.SendText(update.Message.Chat.Id, h.services.Localizer.L("BotUnderDevelopment"))
