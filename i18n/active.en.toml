@@ -46,6 +46,14 @@ other = "Set language pair"
 one = "Please, set the first and second languages using /settings first"
 other = "Please, set the first and second languages using /settings first"
 
+[SetFirstLanguageWarning]
+one = "Please, set the first language using /settings first"
+other = "Please, set the first language using /settings first"
+
+[SetSecondLanguageWarning]
+one = "Please, set the second language using /settings first"
+other = "Please, set the second language using /settings first"
+
 [SetSecondLanguage]
 one = "Set second language"
 other = "Set second language"

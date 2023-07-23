@@ -6,14 +6,15 @@ import (
 
 type Expression struct {
 	gorm.Model
-	UserId       int
-	User         User
-	Text         string `gorm:"type:varchar(255);not null;index" json:"text"`
-	LanguageId   int    `gorm:"type:int;not null" json:"language"`
-	Audio        []Audio
-	Translations []Translation
-	Examples     []Example
-	Synonyms     []Synonym
+	UserID         uint `gorm:"not null"`
+	User           User
+	Text           string `gorm:"type:varchar(255);not null;index"`
+	FromLanguageID uint   `gorm:"not null"`
+	ToLanguageID   uint   `gorm:"not null"`
+	Audio          []Audio
+	Translations   []Translation
+	Examples       []Example
+	Synonyms       []Synonym
 }
 
 func (e Expression) GetText() string {
