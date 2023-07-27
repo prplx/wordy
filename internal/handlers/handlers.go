@@ -20,10 +20,10 @@ func (h *Handlers) Init(app *fiber.App) {
 	app.Get("/ping", func(c *fiber.Ctx) error {
 		return c.SendString("pong")
 	})
-	h.initApi(app)
+	h.initAPI(app)
 }
 
-func (h *Handlers) initApi(app *fiber.App) {
+func (h *Handlers) initAPI(app *fiber.App) {
 	handlerV1 := v1.NewHandlers(h.services)
 
 	api := app.Group("/api")

@@ -73,7 +73,9 @@ func Run(ctx context.Context) {
 	})
 	handlers := handlers.NewHandlers(services)
 
-	app := fiber.New()
+	app := fiber.New(fiber.Config{
+		ProxyHeader: "X-Forwarded-For",
+	})
 	app.Use(recover.New())
 	handlers.Init(app)
 
