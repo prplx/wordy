@@ -14,7 +14,6 @@ import (
 	"github.com/prplx/wordy/internal/helpers"
 	"github.com/prplx/wordy/internal/models"
 	"github.com/prplx/wordy/internal/types"
-	"github.com/prplx/wordy/pkg/logger"
 )
 
 func (h *Handlers) initBotHandlers(api fiber.Router) {
@@ -34,12 +33,12 @@ func (h *Handlers) handleBot(ctx *fiber.Ctx) error {
 	var lang string
 
 	if !ipnetA.Contains(reqIP) && !ipnetB.Contains(reqIP) {
-		logger.Error("Unauthorized request from IP: " + ctx.IP())
+		h.services.Logger.Error(errors.New("Unauthorized request from IP: " + ctx.IP()))
 		return ctx.SendStatus(http.StatusOK)
 	}
 
 	if err := ctx.BodyParser(&update); err != nil {
-		logger.Error(err)
+		h.services.Logger.Error(err)
 		return err
 	}
 
@@ -105,13 +104,13 @@ func (h *Handlers) handleBot(ctx *fiber.Ctx) error {
 			}
 
 			if _, err := h.services.Users.Create(&user); err != nil {
-				logger.Error(err)
+				h.services.Logger.Error(err)
 				return ctx.SendStatus(http.StatusOK)
 			}
 
 			dbUser = user
 		} else {
-			logger.Error(err)
+			h.services.Logger.Error(err)
 			return ctx.SendStatus(http.StatusOK)
 		}
 
@@ -119,21 +118,21 @@ func (h *Handlers) handleBot(ctx *fiber.Ctx) error {
 
 	if update.Message.Text == "/start" {
 		if _, err := h.handleStartCommand(update.Message.Chat.ID); err != nil {
-			logger.Error(err)
+			h.services.Logger.Error(err)
 		}
 		return ctx.SendStatus(http.StatusOK)
 	}
 
 	if update.Message.Text == "/settings" {
 		if _, err := h.handleSettingsCommand(update.Message.Chat.ID); err != nil {
-			logger.Error(err)
+			h.services.Logger.Error(err)
 		}
 		return ctx.SendStatus(http.StatusOK)
 	}
 
 	if update.CallbackQuery.Data == "settings" {
 		if _, err := h.handleSettingsCommand(update.CallbackQuery.Message.Chat.ID, update.CallbackQuery.Message.MessageID); err != nil {
-			logger.Error(err)
+			h.services.Logger.Error(err)
 		}
 		return ctx.SendStatus(http.StatusOK)
 	}
@@ -150,7 +149,7 @@ func (h *Handlers) handleBot(ctx *fiber.Ctx) error {
 			lang = "Second"
 		}
 		if err := h.handleSetLanguagePair(update.CallbackQuery.Message.Chat.ID, update.CallbackQuery.Message.MessageID, h.services.Localizer.L(fmt.Sprintf("Choose%sLanguage", lang)), command, "settings", languages); err != nil {
-			logger.Error(err)
+			h.services.Logger.Error(err)
 		}
 		return ctx.SendStatus(http.StatusOK)
 	}
@@ -179,7 +178,7 @@ func (h *Handlers) handleBot(ctx *fiber.Ctx) error {
 
 		if lang == toCompareWith {
 			if err := h.handleSetLanguagePair(update.CallbackQuery.Message.Chat.ID, update.CallbackQuery.Message.MessageID, "⚠️ "+h.services.Localizer.L("LanguagesMustBeDifferent")+"\n"+h.services.Localizer.L("ChooseFirstLanguage"), "setFirstLanguage", "settings", languages); err != nil {
-				logger.Error(err)
+				h.services.Logger.Error(err)
 			}
 			return ctx.SendStatus(http.StatusOK)
 		}
@@ -192,16 +191,16 @@ func (h *Handlers) handleBot(ctx *fiber.Ctx) error {
 
 		if err := h.handleUpdateUserSettings(update.CallbackQuery.ID, &dbUser); err != nil {
 			h.services.Telegram.SendText(update.CallbackQuery.Message.Chat.ID, h.services.Localizer.L("SomethingWentWrong"))
-			logger.Error(err)
+			h.services.Logger.Error(err)
 			return ctx.SendStatus(http.StatusOK)
 		}
 
 		if err := h.services.Telegram.DeleteMessage(update.CallbackQuery.Message.Chat.ID, update.CallbackQuery.Message.MessageID); err != nil {
-			logger.Error(err)
+			h.services.Logger.Error(err)
 		}
 
 		if _, err := h.services.Telegram.SendText(update.CallbackQuery.Message.Chat.ID, h.services.Localizer.L("SettingsUpdated")); err != nil {
-			logger.Error(err)
+			h.services.Logger.Error(err)
 		}
 
 		return ctx.SendStatus(http.StatusOK)
@@ -215,21 +214,21 @@ func (h *Handlers) handleBot(ctx *fiber.Ctx) error {
 
 	if firstUserLanguage.ID == 0 {
 		if _, err := h.services.Telegram.SendText(update.Message.Chat.ID, h.services.Localizer.L("SetFirstLanguageWarning")); err != nil {
-			logger.Error(err)
+			h.services.Logger.Error(err)
 		}
 		return ctx.SendStatus(http.StatusOK)
 	}
 
 	if secondUserLanguage.ID == 0 {
 		if _, err := h.services.Telegram.SendText(update.Message.Chat.ID, h.services.Localizer.L("SetSecondLanguageWarning")); err != nil {
-			logger.Error(err)
+			h.services.Logger.Error(err)
 		}
 		return ctx.SendStatus(http.StatusOK)
 	}
 
 	err = h.services.Telegram.SendTypingChatAction(update.Message.Chat.ID)
 	if err != nil {
-		logger.Error(err)
+		h.services.Logger.Error(err)
 		return err
 	}
 
@@ -243,17 +242,17 @@ func (h *Handlers) handleBot(ctx *fiber.Ctx) error {
 			from = secondUserLanguage
 			to = firstUserLanguage
 		} else {
-			// TODO: send a message to the user that the detected language is not in the language pair
+			h.services.Logger.Error(errors.New("language not found"))
 			h.services.Telegram.SendText(update.Message.Chat.ID, h.services.Localizer.L("SomethingWentWrong"))
 			return ctx.SendStatus(http.StatusOK)
 		}
 
 		if err := h.handleTextTranslation(update.Message.Chat.ID, update.Message.MessageID, dbUser, strings.TrimSpace(update.Message.Text), from, to, strconv.Itoa(update.Message.From.ID)); err != nil {
-			logger.Error(err)
+			h.services.Logger.Error(err)
 		}
 
 	} else {
-		logger.Info("Language not found")
+		h.services.Logger.Info("Language not found")
 		h.services.Telegram.SendText(update.Message.Chat.ID, h.services.Localizer.L("SomethingWentWrong"))
 	}
 

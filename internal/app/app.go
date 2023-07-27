@@ -19,7 +19,7 @@ import (
 	"github.com/prplx/wordy/internal/models"
 	"github.com/prplx/wordy/internal/repositories"
 	"github.com/prplx/wordy/internal/services"
-	"github.com/prplx/wordy/pkg/logger"
+	"github.com/prplx/wordy/pkg/jsonlog"
 	"golang.ngrok.com/ngrok"
 	"golang.ngrok.com/ngrok/config"
 	"golang.org/x/text/language"
@@ -28,6 +28,7 @@ import (
 )
 
 func Run(ctx context.Context) {
+	logger := jsonlog.New(os.Stdout, jsonlog.LevelInfo)
 	var tun ngrok.Tunnel
 
 	if !helpers.IsProduction() {
@@ -70,6 +71,7 @@ func Run(ctx context.Context) {
 	services := services.NewServices(services.Deps{
 		Repositories:    *repositories,
 		LocalizerBundle: bundle,
+		Logger:          logger,
 	})
 	handlers := handlers.NewHandlers(services)
 
@@ -91,7 +93,7 @@ func Run(ctx context.Context) {
 			err = server.Run(port, adaptor.FiberApp(app), tun)
 		}
 		if err != nil {
-			logger.Fatalf("An error occured while starting server: %s", err.Error())
+			logger.Fatal(err)
 		}
 	}()
 

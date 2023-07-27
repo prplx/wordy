@@ -5,6 +5,7 @@ import (
 	"github.com/prplx/wordy/internal/models"
 	"github.com/prplx/wordy/internal/repositories"
 	"github.com/prplx/wordy/internal/types"
+	"github.com/prplx/wordy/pkg/jsonlog"
 )
 
 type Users interface {
@@ -84,11 +85,13 @@ type Services struct {
 	Audio            Audio
 	Localizer        Localizer
 	LanguageDetector LanguageDetector
+	Logger           *jsonlog.Logger
 }
 
 type Deps struct {
 	Repositories    repositories.Repositories
 	LocalizerBundle *i18n.Bundle
+	Logger          *jsonlog.Logger
 }
 
 func NewServices(deps Deps) *Services {
@@ -105,5 +108,6 @@ func NewServices(deps Deps) *Services {
 		Synonyms:         NewSynonymsService(deps.Repositories.Synonyms),
 		Localizer:        NewLocalizerService(deps.LocalizerBundle),
 		LanguageDetector: NewLanguageDetectorService(),
+		Logger:           deps.Logger,
 	}
 }

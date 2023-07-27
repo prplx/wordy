@@ -8,7 +8,6 @@ import (
 	"github.com/prplx/wordy/internal/helpers"
 	"github.com/prplx/wordy/internal/models"
 	"github.com/prplx/wordy/internal/types"
-	"github.com/prplx/wordy/pkg/logger"
 )
 
 func (h *Handlers) handleStartCommand(chatId int64) (string, error) {
@@ -164,7 +163,7 @@ func (h *Handlers) handleTextTranslation(chatId int64, replyMessageId int, user 
 	var messageToSend string
 
 	if topErr != nil {
-		logger.Error(topErr)
+		h.services.Logger.Error(topErr)
 		messageToSend = helpers.BuildMessage(h.services.Localizer.L("SomethingWentWrong"))
 	} else {
 		messageToSend = helpers.BuildMessage(translations, synonyms, examples, audio)
