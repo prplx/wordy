@@ -1,7 +1,7 @@
 package types
 
 type Chat struct {
-	Id        int64  `json:"id"`
+	ID        int64  `json:"id"`
 	Title     string `json:"title"`
 	Username  string `json:"username"`
 	FirstName string `json:"first_name"`
@@ -9,7 +9,7 @@ type Chat struct {
 }
 
 type User struct {
-	Id           int    `json:"id"`
+	ID           int    `json:"id"`
 	IsBot        bool   `json:"is_bot"`
 	FirstName    string `json:"first_name"`
 	LastName     string `json:"last_name"`
@@ -18,7 +18,7 @@ type User struct {
 }
 
 type CallbackQuery struct {
-	Id           string  `json:"id"`
+	ID           string  `json:"id"`
 	From         User    `json:"from"`
 	Data         string  `json:"data"`
 	Message      Message `json:"message"`
@@ -26,7 +26,7 @@ type CallbackQuery struct {
 }
 
 type Message struct {
-	MessageId int    `json:"message_id"`
+	MessageID int    `json:"message_id"`
 	Date      int    `json:"date"`
 	Text      string `json:"text"`
 	From      User   `json:"from"`

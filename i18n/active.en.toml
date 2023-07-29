@@ -11,44 +11,48 @@ one = "The bot is currently under development. Please, come back later."
 other = "The bot is currently under development. Please, come back later."
 
 [ChooseFirstLanguage]
-one = "Choose first language"
-other = "Choose first language"
+one = "Choose the native language"
+other = "Choose the native language"
 
 [ChooseLanguage]
 one = "Choose language"
 other = "Choose language"
 
 [ChooseSecondLanguage]
-one = "Choose second language"
-other = "Choose second language"
+one = "Choose the foreign language"
+other = "Choose the foreign language"
 
 [Example]
 one = "Example"
 other = "Examples"
 
 [Greeting]
-one = "Hello! My name is Wordy, and I will help you with learning foreign languages! Just send me a word or phrase in the language you're interested in, and I'll return its translation, several synonyms, usage examples, and even audio with the correct pronunciation. Start by setting your native and target languages in /settings. You can change languages before each new message. Good luck with your studies!"
-other = "Hello! My name is Wordy, and I will help you with learning foreign languages! Just send me a word or phrase in the language you're interested in, and I'll return its translation, several synonyms, usage examples, and even audio with the correct pronunciation. Start by setting your native and target languages in /settings. You can change languages before each new message. Good luck with your studies!"
+one = "Hello! My name is Wordy, and I will help you with learning languages! Just send me a word or phrase in the language you're interested in, and I'll return its translation, several synonyms, usage examples, and even audio with the correct pronunciation. Start by setting your native and foreign languages in /settings. Good luck with your studies!"
+other = "Hello! My name is Wordy, and I will help you with learning languages! Just send me a word or phrase in the language you're interested in, and I'll return its translation, several synonyms, usage examples, and even audio with the correct pronunciation. Start by setting your native and foreign languages in /settings. Good luck with your studies!"
 
 [LanguagesMustBeDifferent]
 one = "Languages must be different"
 other = "Languages must be different"
 
 [SetFirstLanguage]
-one = "Set first language"
-other = "Set first language"
+one = "Set the native language"
+other = "Set native language"
 
-[SetLanguages]
-one = "Set language pair"
-other = "Set language pair"
+[SetFirstLanguageWarning]
+one = "Please, set the native language using /settings first"
+other = "Please, set the native language using /settings first"
 
 [SetLanguagesWarning]
-one = "Please, set the first and second languages using /settings first"
-other = "Please, set the first and second languages using /settings first"
+one = "Please, set the native and foreign languages using /settings first"
+other = "Please, set the native and foreign languages using /settings first"
 
 [SetSecondLanguage]
-one = "Set second language"
-other = "Set second language"
+one = "Set foreign language"
+other = "Set foreign language"
+
+[SetSecondLanguageWarning]
+one = "Please, set the foreign language using /settings first"
+other = "Please, set the foreign language using /settings first"
 
 [SettingsUpdated]
 one = "Settings updated"

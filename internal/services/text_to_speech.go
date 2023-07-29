@@ -11,6 +11,6 @@ func NewTextToSpeechService() *TextToSpeechService {
 	}
 }
 
-func (s *TextToSpeechService) Convert(text, lang, userId string) (string, error) {
-	return s.client.Convert(text, lang, userId)
+func (s *TextToSpeechService) Convert(text, lang, userID string) (string, error) {
+	return s.client.Convert(text, lang, userID)
 }

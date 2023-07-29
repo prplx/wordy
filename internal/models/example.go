@@ -7,7 +7,7 @@ import (
 type Example struct {
 	gorm.Model
 	Text         string `gorm:"type:varchar(255);not null" json:"text"`
-	ExpressionId int
+	ExpressionID uint   `gorm:"not null"`
 	Expression   Expression
 }
 

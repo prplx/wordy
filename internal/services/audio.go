@@ -15,8 +15,8 @@ func NewAudioService(repository repositories.Audio) *AudioService {
 	}
 }
 
-func (s *AudioService) GetByExpressionId(expressionId int) (models.Audio, error) {
-	return s.repository.GetByExpressionId(expressionId)
+func (s *AudioService) GetByExpressionID(expressionID int) (models.Audio, error) {
+	return s.repository.GetByExpressionID(expressionID)
 }
 
 func (s *AudioService) Create(audio models.Audio) (int64, error) {

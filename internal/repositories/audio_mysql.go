@@ -25,9 +25,9 @@ func (r *AudioRepo) Create(audio models.Audio) (int64, error) {
 	return result.RowsAffected, nil
 }
 
-func (r *AudioRepo) GetByExpressionId(expressionId int) (models.Audio, error) {
+func (r *AudioRepo) GetByExpressionID(expressionID int) (models.Audio, error) {
 	var audio models.Audio
-	result := r.db.Where("expression_id = ?", expressionId).First(&audio)
+	result := r.db.Where("expression_id = ?", expressionID).First(&audio)
 	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		return audio, models.ErrRecordNotFound
 	}

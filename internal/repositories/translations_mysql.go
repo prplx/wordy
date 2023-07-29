@@ -17,9 +17,9 @@ func NewTranslationsRepository(db *gorm.DB) *TranslationsRepo {
 	}
 }
 
-func (r *TranslationsRepo) QueryByExpressionId(expressionId int) ([]models.Translation, error) {
+func (r *TranslationsRepo) QueryByExpressionID(expressionID int) ([]models.Translation, error) {
 	var translations []models.Translation
-	result := r.db.Find(&translations, "expression_id = ?", expressionId)
+	result := r.db.Find(&translations, "expression_id = ?", expressionID)
 	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		return translations, models.ErrRecordNotFound
 	}

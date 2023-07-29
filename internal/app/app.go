@@ -19,7 +19,7 @@ import (
 	"github.com/prplx/wordy/internal/models"
 	"github.com/prplx/wordy/internal/repositories"
 	"github.com/prplx/wordy/internal/services"
-	"github.com/prplx/wordy/pkg/logger"
+	"github.com/prplx/wordy/pkg/jsonlog"
 	"golang.ngrok.com/ngrok"
 	"golang.ngrok.com/ngrok/config"
 	"golang.org/x/text/language"
@@ -29,9 +29,11 @@ import (
 
 func Run(ctx context.Context) {
 	var tun ngrok.Tunnel
+	var logger *jsonlog.Logger
 
 	if !helpers.IsProduction() {
 		err := godotenv.Load()
+		logger = jsonlog.New(os.Stdout, jsonlog.LevelInfo)
 		if err != nil {
 			logger.Error(err)
 			return
@@ -70,10 +72,13 @@ func Run(ctx context.Context) {
 	services := services.NewServices(services.Deps{
 		Repositories:    *repositories,
 		LocalizerBundle: bundle,
+		Logger:          logger,
 	})
 	handlers := handlers.NewHandlers(services)
 
-	app := fiber.New()
+	app := fiber.New(fiber.Config{
+		ProxyHeader: "X-Forwarded-For",
+	})
 	app.Use(recover.New())
 	handlers.Init(app)
 
@@ -85,11 +90,11 @@ func Run(ctx context.Context) {
 		if helpers.IsProduction() {
 			err = server.Run(port, adaptor.FiberApp(app))
 		} else {
-			helpers.SetWebhookUrl(tun.URL())
+			helpers.SetWebhookURL(tun.URL())
 			err = server.Run(port, adaptor.FiberApp(app), tun)
 		}
 		if err != nil {
-			logger.Fatalf("An error occured while starting server: %s", err.Error())
+			logger.Fatal(err)
 		}
 	}()
 

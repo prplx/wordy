@@ -15,6 +15,7 @@ import (
 
 	"github.com/prplx/wordy/internal/models"
 	"github.com/prplx/wordy/internal/types"
+	"github.com/prplx/wordy/pkg/jsonlog"
 )
 
 func Getenv(key, defaultValue string) string {
@@ -69,9 +70,10 @@ func BuildMessage(text ...string) string {
 	return message
 }
 
-func SetWebhookUrl(webhookUrl string) error {
-	setWebhookUrl := "https://api.telegram.org/bot" + os.Getenv("TG_BOT_TOKEN") + "/setWebhook?url=" + webhookUrl + "/api/v1/bot"
-	resp, err := http.Get(setWebhookUrl)
+func SetWebhookURL(webhookURL string) error {
+	logger := jsonlog.New(os.Stdout, jsonlog.LevelInfo)
+	setWebhookURL := "https://api.telegram.org/bot" + os.Getenv("TG_BOT_TOKEN") + "/setWebhook?url=" + webhookURL + "/api/v1/bot"
+	resp, err := http.Get(setWebhookURL)
 	if err != nil {
 		return err
 	}
@@ -92,8 +94,7 @@ func SetWebhookUrl(webhookUrl string) error {
 		return errors.New(response.Description)
 	}
 
-	fmt.Println(string(body))
-	fmt.Println("Webhook URL is: " + webhookUrl + "/api/v1/bot")
+	logger.Info("Webhook URL is: " + webhookURL + "/api/v1/bot")
 
 	return nil
 }

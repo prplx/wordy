@@ -5,11 +5,12 @@ import (
 	"github.com/prplx/wordy/internal/models"
 	"github.com/prplx/wordy/internal/repositories"
 	"github.com/prplx/wordy/internal/types"
+	"github.com/prplx/wordy/pkg/jsonlog"
 )
 
 type Users interface {
 	Create(user *models.User) (uint, error)
-	GetByTgId(id uint) (models.User, error)
+	GetByTgID(id uint) (models.User, error)
 	Update(user *models.User) error
 }
 
@@ -17,15 +18,17 @@ type Expressions interface {
 	Create(expression *models.Expression) (uint, error)
 	GetByText(text string) (models.Expression, error)
 	GetByTextWithAllData(text string) (models.Expression, error)
+	GetUserByID(expression *models.Expression, user *models.User) error
+	AddUser(expression *models.Expression, user *models.User) error
 }
 
 type Telegram interface {
-	SendText(chatId int64, text string, replyMessageId ...int) (string, error)
-	SendReplyKeyboard(chatId int64, buttons []types.KeyboardButton, text string) (string, error)
-	SendTypingChatAction(chatId int64) error
-	EditMessage(chatId int64, messageId int, text string, buttons ...[]types.KeyboardButton) error
-	EditReplyMarkup(chatId int64, messageId int) error
-	DeleteMessage(chatId int64, messageId int) error
+	SendText(chatID int64, text string, replyMessageID ...int) (string, error)
+	SendReplyKeyboard(chatID int64, buttons []types.KeyboardButton, text string) (string, error)
+	SendTypingChatAction(chatID int64) error
+	EditMessage(chatID int64, messageID int, text string, buttons ...[]types.KeyboardButton) error
+	EditReplyMarkup(chatID int64, messageID int) error
+	DeleteMessage(chatID int64, messageID int) error
 }
 
 type Translator interface {
@@ -40,21 +43,21 @@ type Languages interface {
 }
 
 type Translations interface {
-	QueryByExpressionId(expressionId int) ([]models.Translation, error)
+	QueryByExpressionID(expressionID int) ([]models.Translation, error)
 	Create(translations []models.Translation) (int64, error)
 }
 
 type Examples interface {
-	QueryByExpressionId(expressionId int) ([]models.Example, error)
+	QueryByExpressionID(expressionID int) ([]models.Example, error)
 	Create(examples []models.Example) (int64, error)
 }
 
 type TextToSpeech interface {
-	Convert(text, lang, userId string) (string, error)
+	Convert(text, lang, userID string) (string, error)
 }
 
 type Audio interface {
-	GetByExpressionId(expressionId int) (models.Audio, error)
+	GetByExpressionID(expressionID int) (models.Audio, error)
 	Create(audio models.Audio) (int64, error)
 }
 
@@ -84,11 +87,13 @@ type Services struct {
 	Audio            Audio
 	Localizer        Localizer
 	LanguageDetector LanguageDetector
+	Logger           *jsonlog.Logger
 }
 
 type Deps struct {
 	Repositories    repositories.Repositories
 	LocalizerBundle *i18n.Bundle
+	Logger          *jsonlog.Logger
 }
 
 func NewServices(deps Deps) *Services {
@@ -105,5 +110,6 @@ func NewServices(deps Deps) *Services {
 		Synonyms:         NewSynonymsService(deps.Repositories.Synonyms),
 		Localizer:        NewLocalizerService(deps.LocalizerBundle),
 		LanguageDetector: NewLanguageDetectorService(),
+		Logger:           deps.Logger,
 	}
 }

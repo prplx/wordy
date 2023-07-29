@@ -78,7 +78,7 @@ func TestIsExpressionWithAllData(t *testing.T) {
 	var translations = []models.Translation{{Text: "hello"}, {Text: "hi"}}
 	var examples = []models.Example{{Text: "Hello, world!"}, {Text: "Hi there!"}}
 	var synonyms = []models.Synonym{{Text: "greetings"}, {Text: "salutations"}}
-	var audio = []models.Audio{{Url: "http://example.com/audio.mp3"}}
+	var audio = []models.Audio{{URL: "http://example.com/audio.mp3"}}
 	var tests = []struct {
 		name     string
 		result   bool

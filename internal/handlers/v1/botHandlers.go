@@ -2,57 +2,63 @@ package v1
 
 import (
 	"errors"
+	"fmt"
 	"strings"
 	"sync"
 
 	"github.com/prplx/wordy/internal/helpers"
 	"github.com/prplx/wordy/internal/models"
 	"github.com/prplx/wordy/internal/types"
-	"github.com/prplx/wordy/pkg/logger"
 )
 
-func (h *Handlers) handleStartCommand(chatId int64) (string, error) {
-	return h.services.Telegram.SendText(chatId, h.services.Localizer.L("Greeting"))
+func (h *Handlers) handleStartCommand(chatID int64) (string, error) {
+	return h.services.Telegram.SendText(chatID, h.services.Localizer.L("Greeting"))
 }
 
-func (h *Handlers) handleSettingsCommand(chatId int64, messageId ...int) (string, error) {
-	if len(messageId) == 0 {
-		return h.services.Telegram.SendReplyKeyboard(chatId, []types.KeyboardButton{{Text: h.services.Localizer.L("SetLanguages"), CallbackData: "setLanguagePair"}}, h.services.Localizer.L("BotSettings"))
+func (h *Handlers) handleSettingsCommand(chatID int64, messageID ...int) (string, error) {
+	buttons := []types.KeyboardButton{{Text: h.services.Localizer.L("SetFirstLanguage"), CallbackData: "setLanguage (1)"}, {Text: h.services.Localizer.L("SetSecondLanguage"), CallbackData: "setLanguage (2)"}}
+	if len(messageID) == 0 {
+		return h.services.Telegram.SendReplyKeyboard(chatID, buttons, h.services.Localizer.L("BotSettings"))
 	} else {
-		return "", h.services.Telegram.EditMessage(chatId, messageId[0], h.services.Localizer.L("BotSettings"), []types.KeyboardButton{{Text: h.services.Localizer.L("SetLanguages"), CallbackData: "setLanguagePair"}})
+		return "", h.services.Telegram.EditMessage(chatID, messageID[0], h.services.Localizer.L("BotSettings"), buttons)
 	}
 }
 
-func (h *Handlers) handleSetLanguagePair(chatId int64, messageId int, text, command, menuBackCommand string, languages []models.Language) error {
+func (h *Handlers) handleSetLanguagePair(chatID int64, messageID int, text, command, menuBackCommand string, languages []models.Language) error {
 	var buttons []types.KeyboardButton
 	for _, language := range languages {
 		buttons = append(buttons, types.KeyboardButton{Text: language.Text + " " + language.Emoji, CallbackData: command + " (" + language.Code + ")"})
 	}
 	buttons = append(buttons, types.KeyboardButton{Text: "← " + h.services.Localizer.L("Back"), CallbackData: menuBackCommand})
 
-	return h.services.Telegram.EditMessage(chatId, messageId, text, buttons)
+	return h.services.Telegram.EditMessage(chatID, messageID, text, buttons)
 }
 
-func (h *Handlers) handleUpdateUserSettings(queryId string, user *models.User) error {
+func (h *Handlers) handleUpdateUserSettings(user *models.User) error {
 	return h.services.Users.Update(user)
 }
 
-func (h *Handlers) handleTextTranslation(chatId int64, replyMessageId int, userId int, languageId int, text, from, to, tgUserId string) error {
+func (h *Handlers) handleTextTranslation(chatID int64, replyMessageID int, user models.User, text string, from, to models.Language, tgUserID string) error {
 	wg := sync.WaitGroup{}
-	wg.Add(4)
+	isUsersFirstLanguage := uint(user.FirstLanguage) == from.ID
+	if isUsersFirstLanguage {
+		wg.Add(1)
+	} else {
+		wg.Add(4)
+	}
 	translations, examples, audio, synonyms := "", "", "", ""
 	topErr := error(nil)
 
 	dbExpression, err := h.services.Expressions.GetByTextWithAllData(text)
 
 	// Happy case, everything is in the database
-	if helpers.IsExpressionWithAllData(dbExpression) {
+	if dbExpression.FromLanguageID == from.ID && dbExpression.ToLanguageID == to.ID && helpers.IsExpressionWithAllData(dbExpression) {
 		translations = h.buildTranslationsBlock(dbExpression.Translations)
 		synonyms = h.buildSynonymsBlock(dbExpression.Synonyms)
 		examples = h.buildExamplesBlock(dbExpression.Examples)
-		audio = dbExpression.Audio[0].Url
+		audio = dbExpression.Audio[0].URL
 		message := helpers.BuildMessage(translations, synonyms, examples, audio)
-		if _, err := h.services.Telegram.SendText(chatId, message, replyMessageId); err != nil {
+		if _, err := h.services.Telegram.SendText(chatID, message, replyMessageID); err != nil {
 			return err
 		}
 
@@ -61,9 +67,13 @@ func (h *Handlers) handleTextTranslation(chatId int64, replyMessageId int, userI
 
 	if err != nil {
 		expression := models.Expression{
-			Text: text, UserId: userId, LanguageId: languageId,
+			Text: text, FromLanguageID: from.ID, ToLanguageID: to.ID,
+			Users: []*models.User{&user},
 		}
 		if errors.Is(err, models.ErrRecordNotFound) {
+			h.services.Logger.Info("Expression not found, creating new one", map[string]string{
+				"from": from.Code, "to": to.Code, "text": text, "userId": fmt.Sprint(user.ID),
+			})
 			if _, err := h.services.Expressions.Create(&expression); err != nil {
 				return err
 			}
@@ -73,6 +83,10 @@ func (h *Handlers) handleTextTranslation(chatId int64, replyMessageId int, userI
 		}
 	}
 
+	if err = h.services.Expressions.AddUser(&dbExpression, &user); err != nil {
+		return err
+	}
+
 	go func(tr []models.Translation, wg *sync.WaitGroup) {
 		if len(tr) > 0 {
 			translations = helpers.BuildMessageFromSliceOfTexted(tr)
@@ -80,7 +94,7 @@ func (h *Handlers) handleTextTranslation(chatId int64, replyMessageId int, userI
 			return
 		}
 
-		dbTranslations, err := h.createTranslations(int(dbExpression.ID), from, to, text)
+		dbTranslations, err := h.createTranslations(dbExpression.ID, from.Text, to.Text, text)
 		if err != nil {
 			topErr = err
 		}
@@ -92,77 +106,80 @@ func (h *Handlers) handleTextTranslation(chatId int64, replyMessageId int, userI
 		wg.Done()
 	}(dbExpression.Translations, &wg)
 
-	go func(ex []models.Example, wg *sync.WaitGroup) {
-		if len(ex) > 0 {
-			examples = helpers.BuildMessageFromSliceOfTexted(ex)
-			wg.Done()
-			return
-		}
-
-		dbExamples, err := h.createExamples(int(dbExpression.ID), from, text)
-		if err != nil {
-			topErr = err
-		}
-		if len(dbExamples) > 0 {
-			examples = h.buildExamplesBlock(dbExamples)
-		}
-
-		wg.Done()
-	}(dbExpression.Examples, &wg)
-
-	if len(strings.Fields(text)) == 1 {
-		go func(s []models.Synonym, wg *sync.WaitGroup) {
-			if len(s) > 0 {
-				synonyms = helpers.BuildMessageFromSliceOfTexted(s)
+	if !isUsersFirstLanguage {
+		go func(ex []models.Example, wg *sync.WaitGroup) {
+			if len(ex) > 0 {
+				examples = helpers.BuildMessageFromSliceOfTexted(ex)
 				wg.Done()
 				return
 			}
 
-			dbSynonyms, err := h.createSynonyms(int(dbExpression.ID), from, text)
+			dbExamples, err := h.createExamples(dbExpression.ID, from.Text, text)
 			if err != nil {
 				topErr = err
 			}
-			if len(dbSynonyms) > 0 {
-				synonyms = h.buildSynonymsBlock(dbSynonyms)
+			if len(dbExamples) > 0 {
+				examples = h.buildExamplesBlock(dbExamples)
 			}
 
 			wg.Done()
-		}(dbExpression.Synonyms, &wg)
-	} else {
-		wg.Done()
-	}
+		}(dbExpression.Examples, &wg)
 
-	go func(a []models.Audio, userId string, wg *sync.WaitGroup) {
-		if len(a) > 0 {
-			audio = a[0].Url
+		if len(strings.Fields(text)) == 1 {
+			go func(s []models.Synonym, wg *sync.WaitGroup) {
+				if len(s) > 0 {
+					synonyms = helpers.BuildMessageFromSliceOfTexted(s)
+					wg.Done()
+					return
+				}
+
+				dbSynonyms, err := h.createSynonyms(dbExpression.ID, from.Text, text)
+				if err != nil {
+					topErr = err
+				}
+				if len(dbSynonyms) > 0 {
+					synonyms = h.buildSynonymsBlock(dbSynonyms)
+				}
+
+				wg.Done()
+			}(dbExpression.Synonyms, &wg)
+		} else {
 			wg.Done()
-			return
 		}
 
-		dbAudio, err := h.createAudio(int(dbExpression.ID), from, text, userId)
-		if err != nil {
-			topErr = err
-		}
-		if dbAudio.Url != "" {
-			audio = dbAudio.Url
-		}
+		go func(a []models.Audio, userId string, wg *sync.WaitGroup) {
+			if len(a) > 0 {
+				audio = a[0].URL
+				wg.Done()
+				return
+			}
 
-		wg.Done()
-	}(dbExpression.Audio, tgUserId, &wg)
+			dbAudio, err := h.createAudio(dbExpression.ID, from.Text, text, userId)
+			if err != nil {
+				topErr = err
+			}
+			if dbAudio.URL != "" {
+				audio = dbAudio.URL
+			}
+
+			wg.Done()
+		}(dbExpression.Audio, tgUserID, &wg)
+
+	}
 
 	wg.Wait()
 
 	var messageToSend string
 
 	if topErr != nil {
-		logger.Error(topErr)
+		h.services.Logger.Error(topErr)
 		messageToSend = helpers.BuildMessage(h.services.Localizer.L("SomethingWentWrong"))
 	} else {
 		messageToSend = helpers.BuildMessage(translations, synonyms, examples, audio)
 	}
 
 	if messageToSend != "" {
-		if _, err := h.services.Telegram.SendText(chatId, messageToSend, replyMessageId); err != nil {
+		if _, err := h.services.Telegram.SendText(chatID, messageToSend, replyMessageID); err != nil {
 			return err
 		}
 	}
@@ -170,7 +187,7 @@ func (h *Handlers) handleTextTranslation(chatId int64, replyMessageId int, userI
 	return nil
 }
 
-func (h *Handlers) createTranslations(expressionId int, from, to, text string) ([]models.Translation, error) {
+func (h *Handlers) createTranslations(expressionID uint, from, to, text string) ([]models.Translation, error) {
 	translations, err := h.services.Translator.Translate(text, from, to)
 	if err != nil {
 		return nil, err
@@ -178,7 +195,7 @@ func (h *Handlers) createTranslations(expressionId int, from, to, text string) (
 
 	translationsToCreate := make([]models.Translation, 0, len(translations))
 	for _, line := range translations {
-		translationsToCreate = append(translationsToCreate, models.Translation{Text: line, ExpressionId: expressionId})
+		translationsToCreate = append(translationsToCreate, models.Translation{Text: line, ExpressionID: expressionID})
 	}
 	if _, err := h.services.Translations.Create(translationsToCreate); err != nil {
 		return nil, err
@@ -187,7 +204,7 @@ func (h *Handlers) createTranslations(expressionId int, from, to, text string) (
 	return translationsToCreate, nil
 }
 
-func (h *Handlers) createExamples(expressionId int, language, text string) ([]models.Example, error) {
+func (h *Handlers) createExamples(expressionID uint, language, text string) ([]models.Example, error) {
 	examples, err := h.services.Translator.GenerateExamples(text, language)
 	if err != nil {
 		return nil, err
@@ -195,7 +212,7 @@ func (h *Handlers) createExamples(expressionId int, language, text string) ([]mo
 
 	examplesToCreate := make([]models.Example, 0, len(examples))
 	for _, example := range examples {
-		examplesToCreate = append(examplesToCreate, models.Example{Text: example, ExpressionId: expressionId})
+		examplesToCreate = append(examplesToCreate, models.Example{Text: example, ExpressionID: expressionID})
 	}
 
 	if _, err := h.services.Examples.Create(examplesToCreate); err != nil {
@@ -205,7 +222,7 @@ func (h *Handlers) createExamples(expressionId int, language, text string) ([]mo
 	return examplesToCreate, nil
 }
 
-func (h *Handlers) createSynonyms(expressionId int, language, text string) ([]models.Synonym, error) {
+func (h *Handlers) createSynonyms(expressionID uint, language, text string) ([]models.Synonym, error) {
 	synonyms, err := h.services.Translator.GenerateSynonyms(text, language)
 	if err != nil {
 		return nil, err
@@ -213,7 +230,7 @@ func (h *Handlers) createSynonyms(expressionId int, language, text string) ([]mo
 
 	synonymsToCreate := make([]models.Synonym, 0, len(synonyms))
 	for _, synonym := range synonyms {
-		synonymsToCreate = append(synonymsToCreate, models.Synonym{Text: synonym, ExpressionId: expressionId})
+		synonymsToCreate = append(synonymsToCreate, models.Synonym{Text: synonym, ExpressionID: expressionID})
 	}
 
 	if _, err := h.services.Synonyms.Create(synonymsToCreate); err != nil {
@@ -223,13 +240,13 @@ func (h *Handlers) createSynonyms(expressionId int, language, text string) ([]mo
 	return synonymsToCreate, nil
 }
 
-func (h *Handlers) createAudio(expressionId int, language, text string, userId string) (models.Audio, error) {
-	audioUrl, err := h.services.TextToSpeech.Convert(text, language, userId)
+func (h *Handlers) createAudio(expressionID uint, language, text string, userID string) (models.Audio, error) {
+	audioURL, err := h.services.TextToSpeech.Convert(text, language, userID)
 	if err != nil {
 		return models.Audio{}, err
 	}
 
-	audioToCreate := models.Audio{Url: audioUrl, ExpressionId: expressionId}
+	audioToCreate := models.Audio{URL: audioURL, ExpressionID: expressionID}
 
 	if _, err := h.services.Audio.Create(audioToCreate); err != nil {
 		return audioToCreate, err

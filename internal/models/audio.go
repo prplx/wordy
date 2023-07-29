@@ -6,7 +6,7 @@ import (
 
 type Audio struct {
 	gorm.Model
-	Url          string `gorm:"type:varchar(255);not null" json:"url"`
-	ExpressionId int
+	URL          string `gorm:"type:varchar(255);not null"`
+	ExpressionID uint   `gorm:"not null"`
 	Expression   Expression
 }

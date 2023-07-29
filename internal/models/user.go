@@ -6,11 +6,11 @@ import (
 
 type User struct {
 	gorm.Model
-	TelegramId       int    `gorm:"type:int;unique;not null" json:"telegram_id"`
-	TelegramUsername string `gorm:"type:varchar(255);unique;not null" json:"telegram_username"`
-	FirstName        string `gorm:"type:varchar(255);not null" json:"first_name"`
-	LastName         string `gorm:"type:varchar(255)" json:"last_name"`
-	FirstLanguage    int    `gorm:"type:int" json:"first_language"`
-	SecondLanguage   int    `gorm:"type:int" json:"second_language"`
-	Expressions      []Expression
+	TelegramID       int    `gorm:"unique;not null"`
+	TelegramUsername string `gorm:"type:varchar(255);unique;not null"`
+	FirstName        string `gorm:"type:varchar(255);not null"`
+	LastName         string `gorm:"type:varchar(255)"`
+	FirstLanguage    uint
+	SecondLanguage   uint
+	Expressions      []*Expression `gorm:"many2many:user_expressions;"`
 }

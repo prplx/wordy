@@ -33,7 +33,7 @@ func (r *UsersRepo) Get(id uint) (models.User, error) {
 	return user, result.Error
 }
 
-func (r *UsersRepo) GetByTgId(id uint) (models.User, error) {
+func (r *UsersRepo) GetByTgID(id uint) (models.User, error) {
 	var user models.User
 	result := r.db.First(&user, "telegram_id = ?", id)
 

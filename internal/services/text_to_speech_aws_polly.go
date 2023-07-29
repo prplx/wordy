@@ -18,7 +18,7 @@ func NewTextToSpeechAWSPolly() *TextToSpeechAWSPolly {
 	return &TextToSpeechAWSPolly{}
 }
 
-func (s *TextToSpeechAWSPolly) Convert(text, lang, userId string) (string, error) {
+func (s *TextToSpeechAWSPolly) Convert(text, lang, userID string) (string, error) {
 	sess := session.Must(session.NewSessionWithOptions(session.Options{}))
 
 	pollySvc := polly.New(sess)
@@ -30,7 +30,7 @@ func (s *TextToSpeechAWSPolly) Convert(text, lang, userId string) (string, error
 		return "", err
 	}
 
-	fileName := fmt.Sprintf("%s/%s.mp3", userId, time.Now().Format("2006-01-02-15-04-05"))
+	fileName := fmt.Sprintf("%s/%s.mp3", userID, time.Now().Format("2006-01-02-15-04-05"))
 	s3params := &s3manager.UploadInput{
 		Bucket:      aws.String("wordy-s3"),
 		Key:         aws.String(fileName),
