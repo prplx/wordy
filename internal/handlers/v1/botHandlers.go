@@ -2,6 +2,7 @@ package v1
 
 import (
 	"errors"
+	"fmt"
 	"strings"
 	"sync"
 
@@ -66,9 +67,13 @@ func (h *Handlers) handleTextTranslation(chatID int64, replyMessageID int, user 
 
 	if err != nil {
 		expression := models.Expression{
-			Text: text, UserID: user.ID, FromLanguageID: from.ID, ToLanguageID: to.ID,
+			Text: text, FromLanguageID: from.ID, ToLanguageID: to.ID,
+			Users: []*models.User{&user},
 		}
 		if errors.Is(err, models.ErrRecordNotFound) {
+			h.services.Logger.Info("Expression not found, creating new one", map[string]string{
+				"from": from.Code, "to": to.Code, "text": text, "userId": fmt.Sprint(user.ID),
+			})
 			if _, err := h.services.Expressions.Create(&expression); err != nil {
 				return err
 			}
@@ -76,6 +81,10 @@ func (h *Handlers) handleTextTranslation(chatID int64, replyMessageID int, user 
 		} else {
 			return err
 		}
+	}
+
+	if err = h.services.Expressions.AddUser(&dbExpression, &user); err != nil {
+		return err
 	}
 
 	go func(tr []models.Translation, wg *sync.WaitGroup) {

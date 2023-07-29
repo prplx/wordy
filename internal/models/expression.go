@@ -6,11 +6,10 @@ import (
 
 type Expression struct {
 	gorm.Model
-	UserID         uint `gorm:"not null"`
-	User           User
-	Text           string `gorm:"type:varchar(255);not null;index"`
-	FromLanguageID uint   `gorm:"not null"`
-	ToLanguageID   uint   `gorm:"not null"`
+	Users          []*User `gorm:"many2many:user_expressions;"`
+	Text           string  `gorm:"type:varchar(255);not null;index"`
+	FromLanguageID uint    `gorm:"not null"`
+	ToLanguageID   uint    `gorm:"not null"`
 	Audio          []Audio
 	Translations   []Translation
 	Examples       []Example

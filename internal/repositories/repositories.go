@@ -16,6 +16,8 @@ type Expressions interface {
 	Create(expression *models.Expression) (uint, error)
 	GetByText(text string) (models.Expression, error)
 	GetByTextWithAllData(text string) (models.Expression, error)
+	GetUserByID(expression *models.Expression, user *models.User) error
+	AddUser(expression *models.Expression, user *models.User) error
 }
 
 type Languages interface {

@@ -26,3 +26,11 @@ func (s *ExpressionsService) Create(expression *models.Expression) (uint, error)
 func (s *ExpressionsService) GetByTextWithAllData(text string) (models.Expression, error) {
 	return s.repository.GetByTextWithAllData(text)
 }
+
+func (s *ExpressionsService) GetUserByID(expression *models.Expression, user *models.User) error {
+	return s.repository.GetUserByID(expression, user)
+}
+
+func (s *ExpressionsService) AddUser(expression *models.Expression, user *models.User) error {
+	return s.repository.AddUser(expression, user)
+}

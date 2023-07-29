@@ -12,5 +12,5 @@ type User struct {
 	LastName         string `gorm:"type:varchar(255)"`
 	FirstLanguage    uint
 	SecondLanguage   uint
-	Expressions      []Expression
+	Expressions      []*Expression `gorm:"many2many:user_expressions;"`
 }

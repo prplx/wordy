@@ -44,3 +44,11 @@ func (r *ExpressionsRepo) Create(expression *models.Expression) (uint, error) {
 
 	return expression.ID, result.Error
 }
+
+func (r *ExpressionsRepo) GetUserByID(expression *models.Expression, user *models.User) error {
+	return r.db.Model(&expression).Where("user_id = ?", user.ID).Association("Users").Find(&expression.Users)
+}
+
+func (r *ExpressionsRepo) AddUser(expression *models.Expression, user *models.User) error {
+	return r.db.Model(&expression).Association("Users").Append(&user)
+}
