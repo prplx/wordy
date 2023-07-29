@@ -30,11 +30,10 @@ import (
 
 func Run(ctx context.Context) {
 	var tun ngrok.Tunnel
-	var logger *jsonlog.Logger
+	logger := jsonlog.New(os.Stdout, jsonlog.LevelInfo)
 
 	if !helpers.IsProduction() {
 		err := godotenv.Load()
-		logger = jsonlog.New(os.Stdout, jsonlog.LevelInfo)
 		if err != nil {
 			logger.Error(err)
 			return
