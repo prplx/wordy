@@ -6,6 +6,7 @@ import (
 
 type Expression struct {
 	gorm.Model
+	AuthorID       uint    `gorm:"not null"`
 	Users          []*User `gorm:"many2many:user_expressions;"`
 	Text           string  `gorm:"type:varchar(255);not null;index"`
 	FromLanguageID uint    `gorm:"not null"`

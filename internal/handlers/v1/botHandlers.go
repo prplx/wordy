@@ -67,7 +67,7 @@ func (h *Handlers) handleTextTranslation(chatID int64, replyMessageID int, user 
 
 	if err != nil {
 		expression := models.Expression{
-			Text: text, FromLanguageID: from.ID, ToLanguageID: to.ID,
+			Text: text, FromLanguageID: from.ID, ToLanguageID: to.ID, AuthorID: user.ID,
 			Users: []*models.User{&user},
 		}
 		if errors.Is(err, models.ErrRecordNotFound) {
