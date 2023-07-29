@@ -25,6 +25,7 @@ import (
 	"golang.org/x/text/language"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 func Run(ctx context.Context) {
@@ -64,9 +65,9 @@ func Run(ctx context.Context) {
 
 	bundle := i18n.NewBundle(language.English)
 	bundle.RegisterUnmarshalFunc("toml", toml.Unmarshal)
-	bundle.MustLoadMessageFile("i18n/active.en.toml")
-	bundle.MustLoadMessageFile("i18n/active.ru.toml")
-	bundle.MustLoadMessageFile("i18n/active.nl.toml")
+	bundle.MustLoadMessageFile("./i18n/active.en.toml")
+	bundle.MustLoadMessageFile("./i18n/active.ru.toml")
+	bundle.MustLoadMessageFile("./i18n/active.nl.toml")
 
 	repositories := repositories.NewRepositories(db)
 	services := services.NewServices(services.Deps{
@@ -124,8 +125,7 @@ func seed(db *gorm.DB) error {
 		})
 	}
 
-	result := db.Create(&languages)
-	if result.Error != nil {
+	if result := db.Clauses(clause.OnConflict{DoNothing: true}).Create(&languages); result.Error != nil {
 		return result.Error
 	}
 
