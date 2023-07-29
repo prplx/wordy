@@ -10,25 +10,25 @@ import (
 )
 
 type TextToSpeechPlayHT struct {
-	userId    string
+	userID    string
 	secretKey string
 }
 
 type ConvertResponse struct {
 	Status          string `json:"status"`
-	TranscriptionId string `json:"transcriptionId"`
+	TranscriptionID string `json:"transcriptionId"`
 }
 
 type ConvertStatusResponse struct {
 	Converted    bool   `json:"converted"`
-	AudioUrl     string `json:"audioUrl"`
+	AudioURL     string `json:"audioUrl"`
 	Error        bool   `json:"error"`
 	ErrorMessage string `json:"errorMessage"`
 }
 
-func NewTextToSpeechPlayHT(userId, secretKey string) *TextToSpeechPlayHT {
+func NewTextToSpeechPlayHT(userID, secretKey string) *TextToSpeechPlayHT {
 	return &TextToSpeechPlayHT{
-		userId:    userId,
+		userID:    userID,
 		secretKey: secretKey,
 	}
 }
@@ -41,7 +41,7 @@ func (s *TextToSpeechPlayHT) Convert(text, lang string) (string, error) {
 
 	var conversionStatus ConvertStatusResponse
 	for i := 0; i < 10; i++ {
-		conversionStatus, err = s.getConversionStatus(response.TranscriptionId)
+		conversionStatus, err = s.getConversionStatus(response.TranscriptionID)
 		if err != nil {
 			return "", err
 		}
@@ -61,7 +61,7 @@ func (s *TextToSpeechPlayHT) Convert(text, lang string) (string, error) {
 		return "", fmt.Errorf(conversionStatus.ErrorMessage)
 	}
 
-	return conversionStatus.AudioUrl, nil
+	return conversionStatus.AudioURL, nil
 
 }
 
@@ -70,7 +70,7 @@ func (s *TextToSpeechPlayHT) convert(text, lang string) (ConvertResponse, error)
 	url := "https://play.ht/api/v1/convert"
 	payload := fmt.Sprintf("{\"content\":[\"%s\"],\"voice\":\"%s\", \"globalSpeed\":\"%s\"}", text, getLang(lang), "90%")
 
-	apiResponse, err := s.makeApiRequest(url, http.MethodPost, payload)
+	apiResponse, err := s.makeAPIRequest(url, http.MethodPost, payload)
 	if err != nil {
 		return response, err
 	}
@@ -83,10 +83,10 @@ func (s *TextToSpeechPlayHT) convert(text, lang string) (ConvertResponse, error)
 	return response, nil
 }
 
-func (s *TextToSpeechPlayHT) getConversionStatus(transcriptionId string) (ConvertStatusResponse, error) {
+func (s *TextToSpeechPlayHT) getConversionStatus(transcriptionID string) (ConvertStatusResponse, error) {
 	var response ConvertStatusResponse
-	url := "https://play.ht/api/v1/articleStatus?transcriptionId=" + transcriptionId
-	apiResponse, err := s.makeApiRequest(url, http.MethodGet, "")
+	url := "https://play.ht/api/v1/articleStatus?transcriptionId=" + transcriptionID
+	apiResponse, err := s.makeAPIRequest(url, http.MethodGet, "")
 
 	if err != nil {
 		return response, err
@@ -100,7 +100,7 @@ func (s *TextToSpeechPlayHT) getConversionStatus(transcriptionId string) (Conver
 	return response, nil
 }
 
-func (s *TextToSpeechPlayHT) makeApiRequest(url, method, payload string) ([]byte, error) {
+func (s *TextToSpeechPlayHT) makeAPIRequest(url, method, payload string) ([]byte, error) {
 	reader := strings.NewReader(payload)
 	req, err := http.NewRequest(method, url, reader)
 	if err != nil {
@@ -110,7 +110,7 @@ func (s *TextToSpeechPlayHT) makeApiRequest(url, method, payload string) ([]byte
 	req.Header.Add("accept", "application/json")
 	req.Header.Add("content-type", "application/json")
 	req.Header.Add("AUTHORIZATION", s.secretKey)
-	req.Header.Add("X-USER-ID", s.userId)
+	req.Header.Add("X-USER-ID", s.userID)
 
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {

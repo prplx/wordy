@@ -73,15 +73,15 @@ func (h *Handlers) handleBot(ctx *fiber.Ctx) error {
 		LastName:         update.Message.From.LastName,
 	}
 
-	fromId := update.Message.From.ID
-	if fromId == 0 {
-		fromId = update.CallbackQuery.From.ID
+	fromID := update.Message.From.ID
+	if fromID == 0 {
+		fromID = update.CallbackQuery.From.ID
 	}
-	if fromId == 0 {
+	if fromID == 0 {
 		return ctx.SendStatus(http.StatusOK)
 	}
 
-	dbUser, err := h.services.Users.GetByTgId(uint(fromId))
+	dbUser, err := h.services.Users.GetByTgID(uint(fromID))
 	if err != nil {
 		if errors.Is(err, models.ErrRecordNotFound) {
 			if update.Message.From.LanguageCode != "" {
@@ -189,7 +189,7 @@ func (h *Handlers) handleBot(ctx *fiber.Ctx) error {
 			dbUser.SecondLanguage = lang
 		}
 
-		if err := h.handleUpdateUserSettings(update.CallbackQuery.ID, &dbUser); err != nil {
+		if err := h.handleUpdateUserSettings(&dbUser); err != nil {
 			h.services.Telegram.SendText(update.CallbackQuery.Message.Chat.ID, h.services.Localizer.L("SomethingWentWrong"))
 			h.services.Logger.Error(err)
 			return ctx.SendStatus(http.StatusOK)

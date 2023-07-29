@@ -10,34 +10,34 @@ import (
 	"github.com/prplx/wordy/internal/types"
 )
 
-func (h *Handlers) handleStartCommand(chatId int64) (string, error) {
-	return h.services.Telegram.SendText(chatId, h.services.Localizer.L("Greeting"))
+func (h *Handlers) handleStartCommand(chatID int64) (string, error) {
+	return h.services.Telegram.SendText(chatID, h.services.Localizer.L("Greeting"))
 }
 
-func (h *Handlers) handleSettingsCommand(chatId int64, messageId ...int) (string, error) {
+func (h *Handlers) handleSettingsCommand(chatID int64, messageID ...int) (string, error) {
 	buttons := []types.KeyboardButton{{Text: h.services.Localizer.L("SetFirstLanguage"), CallbackData: "setLanguage (1)"}, {Text: h.services.Localizer.L("SetSecondLanguage"), CallbackData: "setLanguage (2)"}}
-	if len(messageId) == 0 {
-		return h.services.Telegram.SendReplyKeyboard(chatId, buttons, h.services.Localizer.L("BotSettings"))
+	if len(messageID) == 0 {
+		return h.services.Telegram.SendReplyKeyboard(chatID, buttons, h.services.Localizer.L("BotSettings"))
 	} else {
-		return "", h.services.Telegram.EditMessage(chatId, messageId[0], h.services.Localizer.L("BotSettings"), buttons)
+		return "", h.services.Telegram.EditMessage(chatID, messageID[0], h.services.Localizer.L("BotSettings"), buttons)
 	}
 }
 
-func (h *Handlers) handleSetLanguagePair(chatId int64, messageId int, text, command, menuBackCommand string, languages []models.Language) error {
+func (h *Handlers) handleSetLanguagePair(chatID int64, messageID int, text, command, menuBackCommand string, languages []models.Language) error {
 	var buttons []types.KeyboardButton
 	for _, language := range languages {
 		buttons = append(buttons, types.KeyboardButton{Text: language.Text + " " + language.Emoji, CallbackData: command + " (" + language.Code + ")"})
 	}
 	buttons = append(buttons, types.KeyboardButton{Text: "← " + h.services.Localizer.L("Back"), CallbackData: menuBackCommand})
 
-	return h.services.Telegram.EditMessage(chatId, messageId, text, buttons)
+	return h.services.Telegram.EditMessage(chatID, messageID, text, buttons)
 }
 
-func (h *Handlers) handleUpdateUserSettings(queryId string, user *models.User) error {
+func (h *Handlers) handleUpdateUserSettings(user *models.User) error {
 	return h.services.Users.Update(user)
 }
 
-func (h *Handlers) handleTextTranslation(chatId int64, replyMessageId int, user models.User, text string, from, to models.Language, tgUserId string) error {
+func (h *Handlers) handleTextTranslation(chatID int64, replyMessageID int, user models.User, text string, from, to models.Language, tgUserID string) error {
 	wg := sync.WaitGroup{}
 	isUsersFirstLanguage := uint(user.FirstLanguage) == from.ID
 	if isUsersFirstLanguage {
@@ -55,9 +55,9 @@ func (h *Handlers) handleTextTranslation(chatId int64, replyMessageId int, user 
 		translations = h.buildTranslationsBlock(dbExpression.Translations)
 		synonyms = h.buildSynonymsBlock(dbExpression.Synonyms)
 		examples = h.buildExamplesBlock(dbExpression.Examples)
-		audio = dbExpression.Audio[0].Url
+		audio = dbExpression.Audio[0].URL
 		message := helpers.BuildMessage(translations, synonyms, examples, audio)
-		if _, err := h.services.Telegram.SendText(chatId, message, replyMessageId); err != nil {
+		if _, err := h.services.Telegram.SendText(chatID, message, replyMessageID); err != nil {
 			return err
 		}
 
@@ -140,7 +140,7 @@ func (h *Handlers) handleTextTranslation(chatId int64, replyMessageId int, user 
 
 		go func(a []models.Audio, userId string, wg *sync.WaitGroup) {
 			if len(a) > 0 {
-				audio = a[0].Url
+				audio = a[0].URL
 				wg.Done()
 				return
 			}
@@ -149,12 +149,12 @@ func (h *Handlers) handleTextTranslation(chatId int64, replyMessageId int, user 
 			if err != nil {
 				topErr = err
 			}
-			if dbAudio.Url != "" {
-				audio = dbAudio.Url
+			if dbAudio.URL != "" {
+				audio = dbAudio.URL
 			}
 
 			wg.Done()
-		}(dbExpression.Audio, tgUserId, &wg)
+		}(dbExpression.Audio, tgUserID, &wg)
 
 	}
 
@@ -170,7 +170,7 @@ func (h *Handlers) handleTextTranslation(chatId int64, replyMessageId int, user 
 	}
 
 	if messageToSend != "" {
-		if _, err := h.services.Telegram.SendText(chatId, messageToSend, replyMessageId); err != nil {
+		if _, err := h.services.Telegram.SendText(chatID, messageToSend, replyMessageID); err != nil {
 			return err
 		}
 	}
@@ -232,12 +232,12 @@ func (h *Handlers) createSynonyms(expressionID uint, language, text string) ([]m
 }
 
 func (h *Handlers) createAudio(expressionID uint, language, text string, userID string) (models.Audio, error) {
-	audioUrl, err := h.services.TextToSpeech.Convert(text, language, userID)
+	audioURL, err := h.services.TextToSpeech.Convert(text, language, userID)
 	if err != nil {
 		return models.Audio{}, err
 	}
 
-	audioToCreate := models.Audio{Url: audioUrl, ExpressionID: expressionID}
+	audioToCreate := models.Audio{URL: audioURL, ExpressionID: expressionID}
 
 	if _, err := h.services.Audio.Create(audioToCreate); err != nil {
 		return audioToCreate, err

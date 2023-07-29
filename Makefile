@@ -1,4 +1,4 @@
-.PHONY: buildWebhook setWebhook run run/live test translate audit
+.PHONY: buildWebhook setWebhook run run/live test translate audit tidy
 
 MAIN_PACKAGE_PATH := ./cmd/app
 BINARY_NAME := wordy
@@ -38,4 +38,8 @@ audit:
 	go run honnef.co/go/tools/cmd/staticcheck@latest -checks=all,-ST1000,-U1000 ./...
 	go run golang.org/x/vuln/cmd/govulncheck@latest ./...
 	go test -race -buildvcs -vet=off ./...
+
+tidy:
+	go fmt ./...
+	go mod tidy -v
 

@@ -8,7 +8,7 @@ import (
 type Users interface {
 	Create(user *models.User) (uint, error)
 	Get(id uint) (models.User, error)
-	GetByTgId(id uint) (models.User, error)
+	GetByTgID(id uint) (models.User, error)
 	Update(user *models.User) error
 }
 
@@ -24,12 +24,12 @@ type Languages interface {
 }
 
 type Translations interface {
-	QueryByExpressionId(expressionId int) ([]models.Translation, error)
+	QueryByExpressionID(expressionID int) ([]models.Translation, error)
 	Create(translations []models.Translation) (int64, error)
 }
 
 type Examples interface {
-	QueryByExpressionId(expressionId int) ([]models.Example, error)
+	QueryByExpressionID(expressionID int) ([]models.Example, error)
 	Create(examples []models.Example) (int64, error)
 }
 
@@ -38,7 +38,7 @@ type Synonyms interface {
 }
 
 type Audio interface {
-	GetByExpressionId(expressionId int) (models.Audio, error)
+	GetByExpressionID(expressionID int) (models.Audio, error)
 	Create(audio models.Audio) (int64, error)
 }
 

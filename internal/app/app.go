@@ -28,11 +28,12 @@ import (
 )
 
 func Run(ctx context.Context) {
-	logger := jsonlog.New(os.Stdout, jsonlog.LevelInfo)
 	var tun ngrok.Tunnel
+	var logger *jsonlog.Logger
 
 	if !helpers.IsProduction() {
 		err := godotenv.Load()
+		logger = jsonlog.New(os.Stdout, jsonlog.LevelInfo)
 		if err != nil {
 			logger.Error(err)
 			return
@@ -89,7 +90,7 @@ func Run(ctx context.Context) {
 		if helpers.IsProduction() {
 			err = server.Run(port, adaptor.FiberApp(app))
 		} else {
-			helpers.SetWebhookUrl(tun.URL())
+			helpers.SetWebhookURL(tun.URL())
 			err = server.Run(port, adaptor.FiberApp(app), tun)
 		}
 		if err != nil {

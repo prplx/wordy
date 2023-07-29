@@ -15,8 +15,8 @@ func NewTranslationsService(repository repositories.Translations) *TranslationsS
 	}
 }
 
-func (s *TranslationsService) QueryByExpressionId(expressionId int) ([]models.Translation, error) {
-	return s.repository.QueryByExpressionId(expressionId)
+func (s *TranslationsService) QueryByExpressionID(expressionID int) ([]models.Translation, error) {
+	return s.repository.QueryByExpressionID(expressionID)
 }
 
 func (s *TranslationsService) Create(translations []models.Translation) (int64, error) {

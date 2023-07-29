@@ -25,9 +25,9 @@ func (r *ExamplesRepo) Create(examples []models.Example) (int64, error) {
 	return result.RowsAffected, nil
 }
 
-func (r *ExamplesRepo) QueryByExpressionId(expressionId int) ([]models.Example, error) {
+func (r *ExamplesRepo) QueryByExpressionID(expressionID int) ([]models.Example, error) {
 	var examples []models.Example
-	result := r.db.Find(&examples, "expression_id = ?", expressionId)
+	result := r.db.Find(&examples, "expression_id = ?", expressionID)
 	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		return examples, models.ErrRecordNotFound
 	}

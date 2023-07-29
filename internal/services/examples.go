@@ -15,8 +15,8 @@ func NewExamplesService(repository repositories.Examples) *ExamplesService {
 	}
 }
 
-func (s *ExamplesService) QueryByExpressionId(expressionId int) ([]models.Example, error) {
-	return s.repository.QueryByExpressionId(expressionId)
+func (s *ExamplesService) QueryByExpressionID(expressionID int) ([]models.Example, error) {
+	return s.repository.QueryByExpressionID(expressionID)
 }
 
 func (s *ExamplesService) Create(examples []models.Example) (int64, error) {

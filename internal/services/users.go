@@ -19,8 +19,8 @@ func (s *UsersService) Create(user *models.User) (uint, error) {
 	return s.repository.Create(user)
 }
 
-func (s *UsersService) GetByTgId(id uint) (models.User, error) {
-	return s.repository.GetByTgId(id)
+func (s *UsersService) GetByTgID(id uint) (models.User, error) {
+	return s.repository.GetByTgID(id)
 }
 
 func (s *UsersService) Update(user *models.User) error {
