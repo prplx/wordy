@@ -30,10 +30,11 @@ import (
 
 func Run(ctx context.Context) {
 	var tun ngrok.Tunnel
-	logger := jsonlog.New(os.Stdout, jsonlog.LevelInfo)
+	var logger *jsonlog.Logger
 
 	if !helpers.IsProduction() {
 		err := godotenv.Load()
+		logger = jsonlog.New(os.Stdout, jsonlog.LevelInfo)
 		if err != nil {
 			logger.Error(err)
 			return
@@ -47,6 +48,8 @@ func Run(ctx context.Context) {
 			logger.Error(err)
 			return
 		}
+	} else {
+		logger = jsonlog.New(os.Stdout, jsonlog.LevelInfo)
 	}
 
 	db, err := gorm.Open(mysql.Open(os.Getenv("DB_DSN")), &gorm.Config{

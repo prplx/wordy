@@ -1,11 +1,16 @@
 package jsonlog
 
 import (
+	"context"
 	"encoding/json"
 	"io"
+	"log"
 	"os"
 	"sync"
 	"time"
+
+	"github.com/axiomhq/axiom-go/axiom"
+	"github.com/axiomhq/axiom-go/axiom/ingest"
 )
 
 type Level int8
@@ -31,21 +36,21 @@ func (l Level) String() string {
 }
 
 type Logger struct {
-	out      io.Writer
-	minLevel Level
-	mu       sync.Mutex
-	// axiomClient *axiom.Client
+	out         io.Writer
+	minLevel    Level
+	mu          sync.Mutex
+	axiomClient *axiom.Client
 }
 
 func New(out io.Writer, minLevel Level) *Logger {
 	// go min version is 1.19 whereas max go version on Railway is 1.18
-	// axiomClient, err := axiom.NewClient(
-	// axiom.SetPersonalTokenConfig(os.Getenv("AXIOM_TOKEN"), os.Getenv("AXIOM_ORG_ID")),
-	// )
-	// if err != nil {
-	// 	log.Fatalln(err)
-	// }
-	return &Logger{out: out, minLevel: minLevel}
+	axiomClient, err := axiom.NewClient(
+		axiom.SetPersonalTokenConfig(os.Getenv("AXIOM_TOKEN"), os.Getenv("AXIOM_ORG_ID")),
+	)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	return &Logger{out: out, minLevel: minLevel, axiomClient: axiomClient}
 }
 
 func (l *Logger) Info(message string, properties ...map[string]string) {
@@ -61,11 +66,11 @@ func (l *Logger) Fatal(err error, properties ...map[string]string) {
 	os.Exit(1)
 }
 
-// func (l *Logger) Ingest(events []axiom.Event) error {
-// 	ctx := context.Background()
-// 	_, err := l.axiomClient.IngestEvents(ctx, os.Getenv("AXIOM_DATASET"), events)
-// 	return err
-// }
+func (l *Logger) Ingest(events []axiom.Event) error {
+	ctx := context.Background()
+	_, err := l.axiomClient.IngestEvents(ctx, os.Getenv("AXIOM_DATASET"), events)
+	return err
+}
 
 func (l *Logger) print(level Level, message string, properties ...map[string]string) (int, error) {
 	if level < l.minLevel {
@@ -104,13 +109,13 @@ func (l *Logger) print(level Level, message string, properties ...map[string]str
 	l.mu.Lock()
 	defer l.mu.Unlock()
 
-	// err = l.Ingest([]axiom.Event{{
-	// 	ingest.TimestampField: aux.Time,
-	// 	"message":             aux.Message,
-	// 	"level":               aux.Level,
-	// 	"properties":          aux.Properties,
-	// 	"environment":         os.Getenv("APP_ENV"),
-	// }})
+	err = l.Ingest([]axiom.Event{{
+		ingest.TimestampField: aux.Time,
+		"message":             aux.Message,
+		"level":               aux.Level,
+		"properties":          aux.Properties,
+		"environment":         os.Getenv("APP_ENV"),
+	}})
 
 	if err != nil {
 		l.Error(err)
