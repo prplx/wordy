@@ -28,7 +28,7 @@ func (h *Handlers) handleBot(ctx *fiber.Ctx) error {
 	reqIP := net.ParseIP(ctx.IP())
 	_, ipnetA, _ := net.ParseCIDR(os.Getenv("TG_SUBNET_A"))
 	_, ipnetB, _ := net.ParseCIDR(os.Getenv("TG_SUBNET_B"))
-	allowedUsers := []string{"mmystiq", "nastyaknyazhe"}
+	// allowedUsers := []string{"mmystiq", "nastyaknyazhe"}
 	var update types.Update
 	var lang string
 
@@ -51,10 +51,10 @@ func (h *Handlers) handleBot(ctx *fiber.Ctx) error {
 	}
 	h.services.Localizer.ChangeLanguage(lang)
 
-	if !helpers.StringInSlice(update.Message.From.Username, allowedUsers) && !helpers.StringInSlice(update.CallbackQuery.From.Username, allowedUsers) {
-		h.services.Telegram.SendText(update.Message.Chat.ID, h.services.Localizer.L("BotUnderDevelopment"))
-		return ctx.SendStatus(http.StatusOK)
-	}
+	// if !helpers.StringInSlice(update.Message.From.Username, allowedUsers) && !helpers.StringInSlice(update.CallbackQuery.From.Username, allowedUsers) {
+	// 	h.services.Telegram.SendText(update.Message.Chat.ID, h.services.Localizer.L("BotUnderDevelopment"))
+	// 	return ctx.SendStatus(http.StatusOK)
+	// }
 
 	if update.Message.MessageID == 0 && update.CallbackQuery.ID == "" {
 		return ctx.SendStatus(http.StatusOK)
