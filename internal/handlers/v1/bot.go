@@ -249,6 +249,7 @@ func (h *Handlers) handleBot(ctx *fiber.Ctx) error {
 
 		if err := h.handleTextTranslation(update.Message.Chat.ID, update.Message.MessageID, dbUser, strings.TrimSpace(update.Message.Text), from, to, strconv.Itoa(update.Message.From.ID)); err != nil {
 			h.services.Logger.Error(err)
+			return ctx.SendStatus(http.StatusOK)
 		}
 
 	} else {
