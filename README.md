@@ -1,10 +1,3 @@
-# wordy
+# Wordy
 
-### Running at
-Railway
-
-### Database
-Planetscale
-
-### Bot TG API docs
-https://core.telegram.org/bots/api#getting-updates
+A Telegram bot that helps you to learn foreign languages by providing you with translation, examples of usage in the context and correct pronunciation.
