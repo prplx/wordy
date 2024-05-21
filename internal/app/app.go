@@ -23,7 +23,7 @@ import (
 	"golang.ngrok.com/ngrok"
 	"golang.ngrok.com/ngrok/config"
 	"golang.org/x/text/language"
-	"gorm.io/driver/mysql"
+	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )
@@ -52,7 +52,7 @@ func Run(ctx context.Context) {
 		logger = jsonlog.New(os.Stdout, jsonlog.LevelInfo)
 	}
 
-	db, err := gorm.Open(mysql.Open(os.Getenv("DB_DSN")), &gorm.Config{
+	db, err := gorm.Open(postgres.Open(os.Getenv("DB_DSN")), &gorm.Config{
 		DisableForeignKeyConstraintWhenMigrating: true,
 	})
 	if err != nil {
