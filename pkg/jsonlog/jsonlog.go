@@ -10,7 +10,6 @@ import (
 	"time"
 
 	"github.com/axiomhq/axiom-go/axiom"
-	"github.com/axiomhq/axiom-go/axiom/ingest"
 )
 
 type Level int8
@@ -109,13 +108,13 @@ func (l *Logger) print(level Level, message string, properties ...map[string]str
 	l.mu.Lock()
 	defer l.mu.Unlock()
 
-	err = l.Ingest([]axiom.Event{{
-		ingest.TimestampField: aux.Time,
-		"message":             aux.Message,
-		"level":               aux.Level,
-		"properties":          aux.Properties,
-		"environment":         os.Getenv("APP_ENV"),
-	}})
+	// err = l.Ingest([]axiom.Event{{
+	// 	ingest.TimestampField: aux.Time,
+	// 	"message":             aux.Message,
+	// 	"level":               aux.Level,
+	// 	"properties":          aux.Properties,
+	// 	"environment":         os.Getenv("APP_ENV"),
+	// }})
 
 	if err != nil {
 		l.Error(err)
